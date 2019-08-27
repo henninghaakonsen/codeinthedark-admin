@@ -4,7 +4,10 @@
     "private": true,
     "scripts": {
         "start": "NODE_ENV=production node ./src/server",
-        "start:dev": "NODE_ENV=development node ./src/server"
+        "start:dev": "NODE_ENV=development node ./src/server",
+        "build": "yarn build:prod",
+        "build:dev": "webpack --config ./webpack.dev.js",
+        "build:prod": "webpack --config ./webpack.prod.js"
     },
     "dependencies": {
         "@babel/core": "^7.4.5",
