@@ -1,8 +1,8 @@
 const bodyParser = require("body-parser");
-var express = require("express");
-var path = require("path");
-var cookieParser = require("cookie-parser");
-var logger = require("morgan");
+const express = require("express");
+const path = require("path");
+const cookieParser = require("cookie-parser");
+const logger = require("morgan");
 
 const config = require("../webpack.dev"),
     webpack = require("webpack"),
@@ -12,7 +12,7 @@ const config = require("../webpack.dev"),
 
 const port = process.env.PORT || 9000;
 
-var app = express();
+const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
