@@ -12,6 +12,7 @@ interface IParticipantData {
     name: string;
     powerMode: boolean;
     streak: number;
+    uuid: string;
 }
 
 interface IKeyPair {
@@ -22,9 +23,9 @@ let setinterval: NodeJS.Timeout;
 let participantTimeout: NodeJS.Timeout;
 
 enum tournamentStates {
-    "NOT_STARTED",
-    "IN_PROGRESS",
-    "FINISHED"
+    NOT_STARTED,
+    IN_PROGRESS,
+    FINISHED
 }
 
 const App: React.StatelessComponent = () => {
@@ -45,16 +46,59 @@ const App: React.StatelessComponent = () => {
         });
     };
 
+    React.useEffect(() => {
+        const tournamentStateLS = localStorage.getItem("tournamentState");
+        if (tournamentStateLS) {
+            setTournamentState(
+                tournamentStates[
+                    tournamentStateLS as keyof typeof tournamentStates
+                ]
+            );
+        }
+
+        const countdownLS = localStorage.getItem("countdown");
+        if (countdownLS) {
+            setCountdown(moment(+countdownLS));
+        }
+
+        if (
+            tournamentStateLS &&
+            tournamentStates[
+                tournamentStateLS as keyof typeof tournamentStates
+            ] === tournamentStates.IN_PROGRESS
+        ) {
+            setinterval = setInterval(() => {
+                fetchParticipantsData();
+            }, 200);
+
+            if (countdownLS) {
+                participantTimeout = setTimeout(() => {
+                    finishTournament();
+                }, moment.duration(moment(+countdownLS).diff(moment()), "milliseconds").asMilliseconds());
+            }
+        }
+    }, []);
+
+    const localStorageSetTournamentState = (
+        tournamentStateLS: tournamentStates
+    ) => {
+        localStorage.setItem(
+            "tournamentState",
+            tournamentStates[tournamentStateLS]
+        );
+        setTournamentState(tournamentStateLS);
+    };
+
     const finishTournament = () => {
         clearInterval(participantTimeout);
         clearInterval(setinterval);
-        setTournamentState(tournamentStates.FINISHED);
+        localStorageSetTournamentState(tournamentStates.FINISHED);
     };
 
     const resetTournament = () => {
         clearInterval(participantTimeout);
         clearInterval(setinterval);
-        setTournamentState(tournamentStates.NOT_STARTED);
+        localStorageSetTournamentState(tournamentStates.NOT_STARTED);
 
         axios
             .delete("/text")
@@ -66,9 +110,14 @@ const App: React.StatelessComponent = () => {
             fetchParticipantsData();
         }, 200);
 
-        setTournamentState(tournamentStates.IN_PROGRESS);
+        localStorageSetTournamentState(tournamentStates.IN_PROGRESS);
 
-        setCountdown(moment().add(countdownMinutes, "minutes"));
+        const countdownLS = moment().add(countdownMinutes, "minutes");
+        localStorage.setItem(
+            "countdown",
+            (countdownLS.unix() * 1000).toString()
+        );
+        setCountdown(countdownLS);
 
         participantTimeout = setTimeout(() => {
             finishTournament();
@@ -165,11 +214,28 @@ const App: React.StatelessComponent = () => {
                             "app__preview",
                             participantData.powerMode && "power-mode"
                         )}
-                        key={participantData.name}
+                        key={participantData.uuid}
                     >
-                        <h5 className={"app__preview-name"}>
-                            {participantData.name}
-                        </h5>
+                        <div className={"app__preview--bar"}>
+                            <h5 className={"app__preview--bar-name"}>
+                                {participantData.name}
+                            </h5>
+
+                            <div style={{ flex: "1" }} />
+                            <div
+                                className={"app__settings--button"}
+                                onClick={() => {
+                                    axios
+                                        .delete(`/text/${participantData.uuid}`)
+                                        .then(response =>
+                                            setContents(response.data)
+                                        );
+                                }}
+                            >
+                                X
+                            </div>
+                        </div>
+
                         <div className="streak-container">
                             <div className="current">Combo</div>
                             <div
@@ -198,6 +264,7 @@ const App: React.StatelessComponent = () => {
                                 )}
                             </div>
                         </div>
+
                         <iframe
                             className={"app__preview-iframe"}
                             srcDoc={`

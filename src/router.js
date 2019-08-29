@@ -8,9 +8,10 @@ const setupRouter = middleware => {
     router.post("/text", (req, res) => {
         const body = req.body;
 
+        console.log(body);
         cache = {
             ...cache,
-            [body.name]: body
+            [body.uuid]: body
         };
         console.log(cache);
         res.status(200).send();
@@ -22,6 +23,13 @@ const setupRouter = middleware => {
 
     router.delete("/text", (req, res) => {
         cache = {};
+        res.status(200).send(cache);
+    });
+
+    router.delete("/text/:uuid", (req, res) => {
+        delete cache[req.params.uuid];
+
+        console.log(cache);
         res.status(200).send(cache);
     });
 

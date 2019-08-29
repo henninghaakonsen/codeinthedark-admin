@@ -2,18 +2,22 @@
     height: 100%;
     width: calc(100% - 2rem);
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(50rem, 1fr));
+    grid-template-columns: repeat(auto-fill, minmax(40rem, 1fr));
     grid-gap: 1rem;
     background-color: black;
     padding: 2rem 1rem 0 1rem;
-    overflow: auto;
+    position: fixed;
 
     &__preview {
         height: calc(100% - 2rem);
         width: 100%;
 
-        &-name {
-            color: white;
+        &--bar {
+            display: flex;
+
+            &-name {
+                color: white;
+            }
         }
 
         &-iframe {
@@ -44,7 +48,9 @@
         &--button {
             color: white;
             user-select: none;
-            margin: 0 1rem;
+            margin-left: 2rem;
+            display: flex;
+            align-items: center;
     
             &:hover {
                 cursor: pointer;
