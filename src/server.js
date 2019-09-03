@@ -46,6 +46,7 @@ if (process.env.NODE_ENV === "development") {
     );
 }
 
+app.use("/assets", express.static(path.join(__dirname, "..", "public")));
 app.use("/", router.setupRouter(middleware));
 
 app.listen(port, () => {

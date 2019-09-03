@@ -1,19 +1,22 @@
 const express = require("express"),
     path = require("path"),
-    router = express.Router();
+    router = express.Router(),
+    tekster = require("./assets/tekster");
 
 let cache = {};
 
 const setupRouter = middleware => {
+    router.get("/ressurser", (req, res) => {
+        res.status(200).send(tekster.tekster);
+    });
+
     router.post("/text", (req, res) => {
         const body = req.body;
 
-        console.log(body);
         cache = {
             ...cache,
             [body.uuid]: body
         };
-        console.log(cache);
         res.status(200).send();
     });
 
