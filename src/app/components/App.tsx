@@ -41,7 +41,7 @@ const App: React.StatelessComponent = () => {
     const [contents, setContents] = React.useState<IKeyPair>({});
 
     const fetchParticipantsData = () => {
-        axios.get("/text").then((response: AxiosResponse) => {
+        axios.get("/text").then((response: AxiosResponse<IKeyPair>) => {
             setContents(response.data);
         });
     };
@@ -217,9 +217,9 @@ const App: React.StatelessComponent = () => {
                         key={participantData.uuid}
                     >
                         <div className={"app__preview--bar"}>
-                            <h5 className={"app__preview--bar-name"}>
+                            <div className={"app__preview--bar-name"}>
                                 {participantData.name}
-                            </h5>
+                            </div>
 
                             <div style={{ flex: "1" }} />
                             <div
@@ -265,15 +265,7 @@ const App: React.StatelessComponent = () => {
                             </div>
                         </div>
 
-                        <iframe
-                            className={"app__preview-iframe"}
-                            srcDoc={`
-                            <html style="height: 100%; width: 100%; margin: 0">
-                                <body style="height: 100%; width: 100%; margin: 0">
-                                   ${body}
-                                </body>
-                            </html>`}
-                        />
+                        <iframe srcDoc={body} />
                     </div>
                 );
             })}

@@ -1,33 +1,39 @@
 .app {
-    height: 100%;
-    width: calc(100% - 2rem);
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(40rem, 1fr));
-    grid-gap: 1rem;
     background-color: black;
-    padding: 2rem 1rem 0 1rem;
+    display: grid;
+    grid-gap: 1rem;
+    grid-template-columns: repeat(auto-fill, minmax(30rem, 1fr));
+    height: calc(100% - 3rem);
+    padding: 2rem 1rem 1rem 1rem;
     position: fixed;
+    width: calc(100% - 2rem);
 
     &__preview {
-        height: calc(100% - 2rem);
+        height: 100%;
         width: 100%;
 
         &--bar {
             display: flex;
+            padding: 0 1rem;
 
             &-name {
                 color: white;
+                padding-left: .5rem;
+                padding-bottom: .5rem;
             }
         }
 
-        &-iframe {
+        & iframe {
             background-color: white;
             border: none;
-            height: 100%;
+            height: calc(200% - 4rem);
             position: relative;
-            top: -7.5rem;
-            width: 100%;
+            top: -7rem;
+            width: 202%;
             z-index: 15;
+
+            transform: scale(0.5, 0.5);
+            transform-origin: 0 0;
         }
     }
 
