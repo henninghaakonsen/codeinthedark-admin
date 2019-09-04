@@ -1,12 +1,18 @@
-import * as React from 'react';
-import { render } from 'react-dom';
-import App from './components/App';
+import * as React from "react";
+import { render } from "react-dom";
+import App from "./components/App";
 
+import SocketProvider from "./components/SocketProvider/SocketProvider";
 import "./index.less";
 
 const rootElement = document.getElementById("app");
 const renderApp = (Component: React.ComponentType<{}>): void => {
-    render(<Component />, rootElement);
+    render(
+        <SocketProvider>
+            <Component />
+        </SocketProvider>,
+        rootElement
+    );
 };
 
 renderApp(App);

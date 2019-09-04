@@ -3,9 +3,27 @@ const express = require("express"),
     router = express.Router(),
     tekster = require("./assets/tekster");
 
-let cache = {};
+class Cache {
+    constructor() {
+        this.cache = {};
+    }
 
-const setupRouter = middleware => {
+    updateCache(dirtyCache) {
+        this.cache = dirtyCache;
+    }
+
+    getCache() {
+        return this.cache;
+    }
+
+    deleteElement(uuid) {
+        delete cache[uuid];
+    }
+}
+
+const cache = new Cache();
+
+const setupRouter = (middleware, io) => {
     router.get("/ressurser", (req, res) => {
         res.status(200).send(tekster.tekster);
     });
@@ -13,11 +31,13 @@ const setupRouter = middleware => {
     router.post("/text", (req, res) => {
         const body = req.body;
 
-        cache = {
-            ...cache,
+        cache.updateCache({
+            ...cache.getCache(),
             [body.uuid]: body
-        };
+        });
         res.status(200).send();
+
+        io.emit("participant-data", body);
     });
 
     router.get("/text", (req, res) => {
@@ -25,15 +45,14 @@ const setupRouter = middleware => {
     });
 
     router.delete("/text", (req, res) => {
-        cache = {};
-        res.status(200).send(cache);
+        cache.updateCache({});
+        res.status(200).send(cache.getCache());
     });
 
     router.delete("/text/:uuid", (req, res) => {
-        delete cache[req.params.uuid];
+        cache.deleteElement(req.params.uuid);
 
-        console.log(cache);
-        res.status(200).send(cache);
+        res.status(200).send(cache.getCache());
     });
 
     if (process.env.NODE_ENV === "development") {
@@ -58,3 +77,4 @@ const setupRouter = middleware => {
 };
 
 exports.setupRouter = setupRouter;
+exports.cache = cache;

@@ -3,10 +3,13 @@ const express = require("express");
 const path = require("path");
 const cookieParser = require("cookie-parser");
 const logger = require("morgan");
+const http = require("http");
+const socketIo = require("socket.io");
 
 const config = require("../webpack.dev"),
     webpack = require("webpack"),
     router = require("./router"),
+    socket = require("./socket"),
     webpackDevMiddleware = require("webpack-dev-middleware"),
     webpackHotMiddleware = require("webpack-hot-middleware");
 
@@ -47,8 +50,13 @@ if (process.env.NODE_ENV === "development") {
 }
 
 app.use("/assets", express.static(path.join(__dirname, "..", "public")));
-app.use("/", router.setupRouter(middleware));
 
-app.listen(port, () => {
+const server = http.createServer(app);
+let io = socketIo(server);
+socket.setupSocket(io);
+
+app.use("/", router.setupRouter(middleware, io));
+
+server.listen(port, () => {
     console.log(`Started server on ` + port);
 });

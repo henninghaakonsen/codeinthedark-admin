@@ -3,24 +3,8 @@ import * as classNames from "classnames";
 import * as moment from "moment";
 import "moment-duration-format";
 import * as React from "react";
-
-interface IParticipantData {
-    animate: boolean;
-    animationKey: number;
-    content: string;
-    exclamation: string;
-    name: string;
-    powerMode: boolean;
-    streak: number;
-    uuid: string;
-}
-
-interface IKeyPair {
-    [key: string]: IParticipantData;
-}
-
-let setinterval: NodeJS.Timeout;
-let participantTimeout: NodeJS.Timeout;
+import { IParticipantData } from "./types";
+import useDataService from "./useDataService";
 
 enum tournamentStates {
     NOT_STARTED,
@@ -28,22 +12,29 @@ enum tournamentStates {
     FINISHED
 }
 
+let timerTimeout: NodeJS.Timeout;
+let participantTimeout: NodeJS.Timeout;
+
 const App: React.StatelessComponent = () => {
+    const [contents, setContents] = useDataService();
+
     const [countdownMinutes, setCountdownMinutes] = React.useState(15);
     const [tournamentState, setTournamentState] = React.useState<
         tournamentStates
     >(tournamentStates.NOT_STARTED);
 
-    const [countdown, setCountdown] = React.useState<
-        moment.Moment | undefined
-    >();
+    const [countdown, setCountdown] = React.useState<number>(0);
+    const refCountdown = React.useRef(countdown);
+    refCountdown.current = countdown;
 
-    const [contents, setContents] = React.useState<IKeyPair>({});
-
-    const fetchParticipantsData = () => {
-        axios.get("/text").then((response: AxiosResponse<IKeyPair>) => {
-            setContents(response.data);
-        });
+    const setupTimerTimeout = () => {
+        timerTimeout = setInterval(() => {
+            setCountdown(refCountdown.current - 1);
+            localStorage.setItem(
+                "countdown",
+                (refCountdown.current - 1).toString()
+            );
+        }, 1000);
     };
 
     React.useEffect(() => {
@@ -58,7 +49,7 @@ const App: React.StatelessComponent = () => {
 
         const countdownLS = localStorage.getItem("countdown");
         if (countdownLS) {
-            setCountdown(moment(+countdownLS));
+            setCountdown(parseInt(countdownLS, 10));
         }
 
         if (
@@ -67,14 +58,12 @@ const App: React.StatelessComponent = () => {
                 tournamentStateLS as keyof typeof tournamentStates
             ] === tournamentStates.IN_PROGRESS
         ) {
-            setinterval = setInterval(() => {
-                fetchParticipantsData();
-            }, 200);
-
             if (countdownLS) {
                 participantTimeout = setTimeout(() => {
                     finishTournament();
                 }, moment.duration(moment(+countdownLS).diff(moment()), "milliseconds").asMilliseconds());
+
+                setupTimerTimeout();
             }
         }
     }, []);
@@ -91,13 +80,11 @@ const App: React.StatelessComponent = () => {
 
     const finishTournament = () => {
         clearInterval(participantTimeout);
-        clearInterval(setinterval);
         localStorageSetTournamentState(tournamentStates.FINISHED);
     };
 
     const resetTournament = () => {
         clearInterval(participantTimeout);
-        clearInterval(setinterval);
         localStorageSetTournamentState(tournamentStates.NOT_STARTED);
 
         axios
@@ -106,49 +93,33 @@ const App: React.StatelessComponent = () => {
     };
 
     const startTournament = () => {
-        setinterval = setInterval(() => {
-            fetchParticipantsData();
-        }, 200);
-
         localStorageSetTournamentState(tournamentStates.IN_PROGRESS);
 
-        const countdownLS = moment().add(countdownMinutes, "minutes");
-        localStorage.setItem(
-            "countdown",
-            (countdownLS.unix() * 1000).toString()
-        );
+        const countdownLS = countdownMinutes * 60;
+        localStorage.setItem("countdown", countdownLS.toString());
         setCountdown(countdownLS);
 
         participantTimeout = setTimeout(() => {
             finishTournament();
         }, countdownMinutes * 60000);
+
+        setupTimerTimeout();
     };
 
     return (
         <div className={"app"}>
             <div className={"app__settings"}>
                 {tournamentState === tournamentStates.IN_PROGRESS &&
-                    countdown &&
-                    countdown.isAfter(moment()) && (
+                    countdown !== 0 && (
                         <div className={"app__settings--countdown"}>
                             {moment
-                                .duration(
-                                    countdown.diff(moment()),
-                                    "milliseconds"
-                                )
+                                .duration(countdown, "seconds")
                                 .format("mm:ss")}
                         </div>
                     )}
 
                 {tournamentState === tournamentStates.NOT_STARTED && (
                     <>
-                        <div
-                            className={"app__settings--button"}
-                            onClick={() => {
-                                fetchParticipantsData();
-                            }}
-                            children={"Fetch"}
-                        />
                         <div
                             className={"app__settings--button"}
                             onClick={() => {
