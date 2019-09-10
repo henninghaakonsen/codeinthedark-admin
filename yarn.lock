@@ -5329,6 +5329,11 @@ react-lifecycles-compat@^3.0.4:
   resolved "https://registry.yarnpkg.com/react-lifecycles-compat/-/react-lifecycles-compat-3.0.4.tgz#4f1a273afdfc8f3488a8c516bfda78f872352362"
   integrity sha512-fBASbA6LnOU9dOU2eW7aQ8xmYBSXUIWr+UmF9b1efZBazGNO+rcXT/icdKnYm2pTwcRylVUYwW7H1PHfLekVzA==
 
+react-safe-src-doc-iframe@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/react-safe-src-doc-iframe/-/react-safe-src-doc-iframe-1.1.0.tgz#8928c526481a6dc883ff8085d55bd17fba5273a2"
+  integrity sha512-+MTSiRNOgJ74sC+zw/7/W0kUu3oFGX4jddNg/jAr/iqE6Tt3OgRshuwD8QqU1K1qQqLuPchk7Y5fZQNwOrE1CA==
+
 react-transition-group@^4.0.0:
   version "4.2.2"
   resolved "https://registry.yarnpkg.com/react-transition-group/-/react-transition-group-4.2.2.tgz#8b5252410180c27fd7eebf50b185256b41799b16"

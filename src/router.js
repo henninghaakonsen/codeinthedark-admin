@@ -17,7 +17,7 @@ class Cache {
     }
 
     deleteElement(uuid) {
-        delete cache[uuid];
+        delete this.cache[uuid];
     }
 }
 

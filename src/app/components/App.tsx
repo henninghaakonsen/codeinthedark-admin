@@ -1,8 +1,8 @@
 import axios, { AxiosResponse } from "axios";
-import * as classNames from "classnames";
 import * as moment from "moment";
 import "moment-duration-format";
 import * as React from "react";
+import Preview from "./Preview/Preview";
 import { IParticipantData } from "./types";
 import useDataService from "./useDataService";
 
@@ -61,11 +61,16 @@ const App: React.StatelessComponent = () => {
             if (countdownLS) {
                 participantTimeout = setTimeout(() => {
                     finishTournament();
-                }, moment.duration(moment(+countdownLS).diff(moment()), "milliseconds").asMilliseconds());
+                }, moment.duration(+countdownLS, "seconds").asMilliseconds());
 
                 setupTimerTimeout();
             }
         }
+
+        return () => {
+            clearTimeout(timerTimeout);
+            clearTimeout(participantTimeout);
+        };
     }, []);
 
     const localStorageSetTournamentState = (
@@ -109,6 +114,8 @@ const App: React.StatelessComponent = () => {
     return (
         <div className={"app"}>
             <div className={"app__settings"}>
+                <div className={"app__settings--tittel"}>Code in the Dark</div>
+                <div style={{ flex: 1 }} />
                 {tournamentState === tournamentStates.IN_PROGRESS &&
                     countdown !== 0 && (
                         <div className={"app__settings--countdown"}>
@@ -171,75 +178,28 @@ const App: React.StatelessComponent = () => {
                     </>
                 )}
             </div>
+            <div className={"previews"}>
+                {Object.keys(contents).map((contentKey: any) => {
+                    const participantData: IParticipantData =
+                        contents[contentKey];
+                    const body = participantData.content.replace(
+                        /(\r\n|\n|\r)/gm,
+                        ""
+                    );
 
-            {Object.keys(contents).map((contentKey: any) => {
-                const participantData: IParticipantData = contents[contentKey];
-                const body = participantData.content.replace(
-                    /(\r\n|\n|\r)/gm,
-                    ""
-                );
-
-                return (
-                    <div
-                        className={classNames(
-                            "app__preview",
-                            participantData.powerMode && "power-mode"
-                        )}
-                        key={participantData.uuid}
-                    >
-                        <div className={"app__preview--bar"}>
-                            <div className={"app__preview--bar-name"}>
-                                {participantData.name}
-                            </div>
-
-                            <div style={{ flex: "1" }} />
-                            <div
-                                className={"app__settings--button"}
-                                onClick={() => {
-                                    axios
-                                        .delete(`/text/${participantData.uuid}`)
-                                        .then(response =>
-                                            setContents(response.data)
-                                        );
-                                }}
-                            >
-                                X
-                            </div>
-                        </div>
-
-                        <div className="streak-container">
-                            <div className="current">Combo</div>
-                            <div
-                                key={participantData.animationKey}
-                                className="counter bump"
-                            >
-                                {participantData.streak}
-                            </div>
-                            <div
-                                key={participantData.animationKey + 1}
-                                className={`bar ${
-                                    participantData.animate &&
-                                    participantData.streak !== 0
-                                        ? "animate"
-                                        : ""
-                                }`}
-                            />
-                            <div className="exclamations">
-                                {participantData.exclamation && (
-                                    <span
-                                        key={participantData.exclamation}
-                                        className="exclamation"
-                                    >
-                                        {participantData.exclamation}
-                                    </span>
-                                )}
-                            </div>
-                        </div>
-
-                        <iframe srcDoc={body} />
-                    </div>
-                );
-            })}
+                    return (
+                        <Preview
+                            key={contentKey}
+                            html={body}
+                            participantData={participantData}
+                            numberOfParticipants={
+                                Object.values(contents).length
+                            }
+                            setContents={setContents}
+                        />
+                    );
+                })}
+            </div>
         </div>
     );
 };

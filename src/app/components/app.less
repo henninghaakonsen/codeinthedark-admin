@@ -1,47 +1,17 @@
 .app {
     background-color: black;
-    display: grid;
-    grid-gap: 1rem;
-    grid-template-columns: repeat(auto-fill, minmax(30rem, 1fr));
-    height: calc(100% - 3rem);
-    padding: 2rem 1rem 1rem 1rem;
+    height: 100%;
     position: fixed;
-    width: calc(100% - 2rem);
-
-    &__preview {
-        height: 100%;
-        width: 100%;
-
-        &--bar {
-            display: flex;
-            padding: 0 1rem;
-
-            &-name {
-                color: white;
-                padding-left: .5rem;
-                padding-bottom: .5rem;
-            }
-        }
-
-        & iframe {
-            background-color: white;
-            border: none;
-            height: calc(200% - 4rem);
-            position: relative;
-            top: -7rem;
-            width: 202%;
-            z-index: 15;
-
-            transform: scale(0.5, 0.5);
-            transform-origin: 0 0;
-        }
-    }
+    width: 100%;
 
     &__settings {
-        position: absolute;
-        right: 1rem;
-        top: .5rem;
         display: flex;
+        flex-direction: row;
+        padding: 1rem;
+
+        &--tittel {
+            color: white;
+        }
 
         &--countdown {
             color: white;
@@ -82,6 +52,54 @@
     }
 }
 
+.previews {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    height: 100%;
+    width: 100%;
+
+    &__preview {
+        padding: 0 1rem;
+    
+        &--bar {
+            display: flex;
+    
+            &-name {
+                color: white;
+                padding-bottom: .5rem;
+            }
+        }
+    
+        &__iframecontainer {
+            position: relative;
+            height: calc(100% - 2rem);
+    
+            & iframe {
+                background-color: white;
+                border: none;
+                height: 200%;
+                left: 0;
+                position: absolute;
+                top: 0;
+                width: 200%;
+                z-index: 15;
+        
+                transform: scale(0.5, 0.5);
+                transform-origin: 0 0;
+        
+                & hidden {
+                    visibility: hidden;
+                }
+        
+                & visible {
+                    visibility: visible;
+                }
+            }
+        }
+    }
+}
+
 .power-mode {
   --streak-color: #00ddff;
   --pm-indicator-opacity: 1;
@@ -92,6 +110,7 @@
     position: relative;
     z-index: 20;
     right: 1rem;
+    margin-top: .5rem;
     text-align: right;
     float: right;
   
@@ -103,7 +122,7 @@
     .bar {
         position: relative;
         opacity: 0.5;
-        margin-top: 23px;
+        margin-top: 1.25rem;
         height: 8px;
         background: var(--streak-color, #4effa1);
         width: 100%;
