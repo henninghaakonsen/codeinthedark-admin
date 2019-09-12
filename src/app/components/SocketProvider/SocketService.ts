@@ -3,7 +3,9 @@ import * as io from "socket.io-client";
 import { IKeyPair, IParticipantData } from "../types";
 
 export class SocketService {
+    /* tslint:disable */
     private socket: SocketIOClient.Socket = {} as SocketIOClient.Socket;
+    /* tslint:enable */
 
     public init(): SocketService {
         this.socket = io("/");

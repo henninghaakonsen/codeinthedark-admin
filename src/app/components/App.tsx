@@ -6,22 +6,25 @@ import Preview from "./Preview/Preview";
 import { IParticipantData } from "./types";
 import useDataService from "./useDataService";
 
-enum tournamentStates {
+export enum tournamentStates {
     NOT_STARTED,
     IN_PROGRESS,
     FINISHED
 }
 
 let timerTimeout: NodeJS.Timeout;
-let participantTimeout: NodeJS.Timeout;
 
 const App: React.StatelessComponent = () => {
-    const [contents, setContents] = useDataService();
+    const [
+        contents,
+        setContents,
+        tournamentState,
+        setTournamentState
+    ] = useDataService();
 
-    const [countdownMinutes, setCountdownMinutes] = React.useState(15);
-    const [tournamentState, setTournamentState] = React.useState<
-        tournamentStates
-    >(tournamentStates.NOT_STARTED);
+    const refTournamentState = React.useRef(tournamentState);
+    refTournamentState.current = tournamentState;
+    const [countdownMinutes, setCountdownMinutes] = React.useState(0.1);
 
     const [countdown, setCountdown] = React.useState<number>(0);
     const refCountdown = React.useRef(countdown);
@@ -29,11 +32,15 @@ const App: React.StatelessComponent = () => {
 
     const setupTimerTimeout = () => {
         timerTimeout = setInterval(() => {
-            setCountdown(refCountdown.current - 1);
-            localStorage.setItem(
-                "countdown",
-                (refCountdown.current - 1).toString()
-            );
+            if (refCountdown.current === 1) {
+                finishTournament();
+            } else {
+                setCountdown(refCountdown.current - 1);
+                localStorage.setItem(
+                    "countdown",
+                    (refCountdown.current - 1).toString()
+                );
+            }
         }, 1000);
     };
 
@@ -59,17 +66,12 @@ const App: React.StatelessComponent = () => {
             ] === tournamentStates.IN_PROGRESS
         ) {
             if (countdownLS) {
-                participantTimeout = setTimeout(() => {
-                    finishTournament();
-                }, moment.duration(+countdownLS, "seconds").asMilliseconds());
-
                 setupTimerTimeout();
             }
         }
 
         return () => {
             clearTimeout(timerTimeout);
-            clearTimeout(participantTimeout);
         };
     }, []);
 
@@ -84,12 +86,11 @@ const App: React.StatelessComponent = () => {
     };
 
     const finishTournament = () => {
-        clearInterval(participantTimeout);
+        clearTimeout(timerTimeout);
         localStorageSetTournamentState(tournamentStates.FINISHED);
     };
 
     const resetTournament = () => {
-        clearInterval(participantTimeout);
         localStorageSetTournamentState(tournamentStates.NOT_STARTED);
 
         axios
@@ -103,10 +104,6 @@ const App: React.StatelessComponent = () => {
         const countdownLS = countdownMinutes * 60;
         localStorage.setItem("countdown", countdownLS.toString());
         setCountdown(countdownLS);
-
-        participantTimeout = setTimeout(() => {
-            finishTournament();
-        }, countdownMinutes * 60000);
 
         setupTimerTimeout();
     };
