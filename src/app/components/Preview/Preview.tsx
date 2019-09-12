@@ -8,7 +8,6 @@ interface IProps {
     html: string;
     numberOfParticipants: number;
     participantData: IParticipantData;
-    setContents: (participantsData: IKeyPair) => void;
 }
 
 const sizes = (numberOfParticipants: number) => {
@@ -33,8 +32,7 @@ const sizes = (numberOfParticipants: number) => {
 const Preview: React.FunctionComponent<IProps> = ({
     html,
     numberOfParticipants,
-    participantData,
-    setContents
+    participantData
 }) => {
     const [currentVisible, setCurrentVisble] = React.useState(0);
     const refCurrentVisible = React.useRef(currentVisible);
@@ -54,7 +52,7 @@ const Preview: React.FunctionComponent<IProps> = ({
 
         setTimeout(() => {
             setCurrentVisble((refCurrentVisible.current + 1) % 2);
-        }, 200);
+        }, 500);
     }, [html]);
 
     return (
@@ -82,9 +80,7 @@ const Preview: React.FunctionComponent<IProps> = ({
                 <div
                     className={"app__settings--button"}
                     onClick={() => {
-                        axios
-                            .delete(`/text/${participantData.uuid}`)
-                            .then(response => setContents(response.data));
+                        axios.delete(`/text/${participantData.uuid}`);
                     }}
                 >
                     X

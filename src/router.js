@@ -1,7 +1,7 @@
 const express = require("express"),
     path = require("path"),
-    router = express.Router(),
-    tekster = require("./assets/tekster");
+    fs = require("fs"),
+    router = express.Router();
 
 class Cache {
     constructor() {
@@ -24,10 +24,6 @@ class Cache {
 const cache = new Cache();
 
 const setupRouter = (middleware, io) => {
-    router.get("/ressurser", (req, res) => {
-        res.status(200).send(tekster.tekster);
-    });
-
     router.post("/text", (req, res) => {
         const body = req.body;
 
@@ -46,13 +42,25 @@ const setupRouter = (middleware, io) => {
 
     router.delete("/text", (req, res) => {
         cache.updateCache({});
-        res.status(200).send(cache.getCache());
+
+        res.status(200).send();
+        io.emit("participants-data", cache.getCache());
     });
 
     router.delete("/text/:uuid", (req, res) => {
         cache.deleteElement(req.params.uuid);
 
-        res.status(200).send(cache.getCache());
+        res.status(200).send();
+        io.emit("participants-data", cache.getCache());
+    });
+
+    router.get("/result", (req, res) => {
+        res.status(200).send(
+            fs.readFileSync(
+                path.join(__dirname, "./assets/result.html"),
+                "UTF-8"
+            )
+        );
     });
 
     if (process.env.NODE_ENV === "development") {
