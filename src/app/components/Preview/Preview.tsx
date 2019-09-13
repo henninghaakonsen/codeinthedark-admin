@@ -13,18 +13,18 @@ interface IProps {
 const sizes = (numberOfParticipants: number) => {
     if (numberOfParticipants === 1) {
         return {
-            height: (innerHeight: number) => innerHeight * 1,
-            width: (innerWidth: number) => innerWidth * 1
+            height: (innerHeight: number) => `${innerHeight * 1 - 8}px`,
+            width: (innerWidth: number) => `${innerWidth * 1 - 24}px`
         };
     } else if (numberOfParticipants <= 4) {
         return {
-            height: (innerHeight: number) => innerHeight * 0.5 - 24,
-            width: (innerWidth: number) => innerWidth * 0.5 - 24
+            height: (innerHeight: number) => `${innerHeight * 0.5 - 8}px`,
+            width: (innerWidth: number) => `${innerWidth * 0.5 - 24}px`
         };
     } else {
         return {
-            height: (innerHeight: number) => innerHeight * 1,
-            width: (innerWidth: number) => innerWidth * 1
+            height: (innerHeight: number) => `100%`,
+            width: (innerWidth: number) => `100%`
         };
     }
 };
@@ -60,10 +60,8 @@ const Preview: React.FunctionComponent<IProps> = ({
             style={{
                 height: `${sizes(numberOfParticipants).height(
                     windowSize.height
-                )}px`,
-                width: `${sizes(numberOfParticipants).width(
-                    windowSize.width
-                )}px`
+                )}`,
+                width: `${sizes(numberOfParticipants).width(windowSize.width)}`
             }}
             className={classNames(
                 "previews__preview",

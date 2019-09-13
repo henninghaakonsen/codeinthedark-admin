@@ -7,7 +7,9 @@
     &__settings {
         display: flex;
         flex-direction: row;
-        padding: 1rem;
+        padding: .5rem 1rem;
+        font-size: 1.5rem;
+        border-bottom: 2px solid white;
 
         &--tittel {
             color: white;
@@ -30,10 +32,11 @@
     
             &:hover {
                 cursor: pointer;
+                color: gray;
             }
     
             &:active {
-                color: gray;
+                color: darkgray;
             }
         }
 
@@ -55,8 +58,9 @@
 .previews {
     display: flex;
     flex-wrap: wrap;
+    height: calc(100% - 5rem);
     justify-content: space-between;
-    height: 100%;
+    padding-top: 1rem;
     width: 100%;
 
     &__preview {
