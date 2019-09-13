@@ -24,6 +24,7 @@ const useDataService = (): [
         socket.init();
         const receiveParticipantData = socket.onParticipantData();
         const receiveParticipantsData = socket.onParticipantsData();
+        const reset = socket.onReset();
 
         receiveParticipantData.subscribe(
             (participantData: IParticipantData) => {
@@ -43,6 +44,10 @@ const useDataService = (): [
             if (refTournamentState.current === tournamentStates.IN_PROGRESS) {
                 setContents(participantsData);
             }
+        });
+
+        reset.subscribe((participantsData: IKeyPair) => {
+            setContents(participantsData);
         });
 
         return () => socket.disconnect();

@@ -44,7 +44,7 @@ const setupRouter = (middleware, io) => {
         cache.updateCache({});
 
         res.status(200).send();
-        io.emit("participants-data", cache.getCache());
+        io.emit("reset", cache.getCache());
     });
 
     router.delete("/text/:uuid", (req, res) => {

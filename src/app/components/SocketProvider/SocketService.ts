@@ -21,6 +21,10 @@ export class SocketService {
         return fromEvent(this.socket, "participants-data");
     }
 
+    public onReset(): Observable<IKeyPair> {
+        return fromEvent(this.socket, "reset");
+    }
+
     // disconnect - used when unmounting
     public disconnect(): void {
         this.socket.disconnect();

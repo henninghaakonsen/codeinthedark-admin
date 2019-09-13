@@ -93,9 +93,7 @@ const App: React.StatelessComponent = () => {
     const resetTournament = () => {
         localStorageSetTournamentState(tournamentStates.NOT_STARTED);
 
-        axios
-            .delete("/text")
-            .then((response: AxiosResponse) => setContents(response.data));
+        axios.delete("/text");
     };
 
     const startTournament = () => {
