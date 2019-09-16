@@ -2,7 +2,7 @@ import axios from "axios";
 import * as classNames from "classnames";
 import * as React from "react";
 import useWindowSize from "../../hooks/useWindowSize";
-import { IKeyPair, IParticipantData } from "../types";
+import { IParticipantData } from "../types";
 
 interface IProps {
     html: string;
@@ -52,7 +52,7 @@ const Preview: React.FunctionComponent<IProps> = ({
 
         setTimeout(() => {
             setCurrentVisble((refCurrentVisible.current + 1) % 2);
-        }, 500);
+        }, 250);
     }, [html]);
 
     return (
