@@ -6,6 +6,7 @@ const setupSocket = io => {
     const onConnect = client => {
         console.log("client connected =>", client.id);
         io.emit("participants-data", cache.getCache());
+        io.emit("participants-winners", cache.getWinners());
     };
 
     const registerClient = client => {

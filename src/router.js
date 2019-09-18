@@ -6,18 +6,35 @@ const express = require("express"),
 class Cache {
     constructor() {
         this.cache = {};
+        this.winners = {};
     }
 
     updateCache(dirtyCache) {
         this.cache = dirtyCache;
     }
 
+    updateWinners(dirtyWinners) {
+        this.winners = dirtyWinners;
+    }
+
     getCache() {
         return this.cache;
     }
 
+    getParticipant(uuid) {
+        return this.cache[uuid];
+    }
+
+    getWinners() {
+        return this.winners;
+    }
+
     deleteElement(uuid) {
         delete this.cache[uuid];
+    }
+
+    deleteWinner(uuid) {
+        delete this.winners[uuid];
     }
 }
 
@@ -52,6 +69,25 @@ const setupRouter = (middleware, io) => {
 
         res.status(200).send();
         io.emit("participants-data", cache.getCache());
+    });
+
+    router.post("/new-winner/:uuid", (req, res) => {
+        const uuid = req.params.uuid;
+
+        cache.updateWinners({
+            ...cache.getWinners(),
+            [uuid]: cache.getParticipant(uuid)
+        });
+
+        res.status(200).send();
+        io.emit("participants-winners", cache.getWinners());
+    });
+
+    router.delete("/winners/:uuid", (req, res) => {
+        cache.deleteWinner(req.params.uuid);
+
+        res.status(200).send();
+        io.emit("participants-winners", cache.getWinners());
     });
 
     router.get("/result", (req, res) => {

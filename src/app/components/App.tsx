@@ -1,10 +1,10 @@
-import axios, { AxiosResponse } from "axios";
+import axios from "axios";
 import * as moment from "moment";
 import "moment-duration-format";
 import * as React from "react";
 import Preview from "./Preview/Preview";
+import useParticipantsDataService from "./Services/useParticipantsDataService";
 import { IParticipantData } from "./types";
-import useDataService from "./useDataService";
 
 export enum tournamentStates {
     NOT_STARTED,
@@ -20,11 +20,11 @@ const App: React.StatelessComponent = () => {
         setContents,
         tournamentState,
         setTournamentState
-    ] = useDataService();
+    ] = useParticipantsDataService();
 
     const refTournamentState = React.useRef(tournamentState);
     refTournamentState.current = tournamentState;
-    const [countdownMinutes, setCountdownMinutes] = React.useState(15);
+    const [countdownMinutes, setCountdownMinutes] = React.useState(0.1);
 
     const [countdown, setCountdown] = React.useState<number>(0);
     const refCountdown = React.useRef(countdown);
@@ -190,6 +190,7 @@ const App: React.StatelessComponent = () => {
                             numberOfParticipants={
                                 Object.values(contents).length
                             }
+                            tournamentState={tournamentState}
                         />
                     );
                 })}

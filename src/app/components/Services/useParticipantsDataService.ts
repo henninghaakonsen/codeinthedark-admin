@@ -1,9 +1,9 @@
 import * as React from "react";
-import { tournamentStates } from "./App";
-import { useSocket } from "./SocketProvider/SocketContext";
-import { IKeyPair, IParticipantData } from "./types";
+import { tournamentStates } from "../App";
+import { useSocket } from "../SocketProvider/SocketContext";
+import { IKeyPair, IParticipantData } from "../types";
 
-const useDataService = (): [
+const useParticipantsDataService = (): [
     IKeyPair,
     (keypair: IKeyPair) => void,
     tournamentStates,
@@ -56,4 +56,4 @@ const useDataService = (): [
     return [contents, setContents, tournamentState, setTournamentState];
 };
 
-export default useDataService;
+export default useParticipantsDataService;

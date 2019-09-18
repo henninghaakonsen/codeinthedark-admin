@@ -25,6 +25,10 @@ export class SocketService {
         return fromEvent(this.socket, "reset");
     }
 
+    public onUpdatedWinners(): Observable<IKeyPair> {
+        return fromEvent(this.socket, "participants-winners");
+    }
+
     // disconnect - used when unmounting
     public disconnect(): void {
         this.socket.disconnect();

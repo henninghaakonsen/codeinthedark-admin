@@ -2,15 +2,17 @@ import axios from "axios";
 import * as classNames from "classnames";
 import * as React from "react";
 import useWindowSize from "../../hooks/useWindowSize";
+import { tournamentStates } from "../App";
 import { IParticipantData } from "../types";
 
 interface IProps {
     html: string;
     numberOfParticipants: number;
     participantData: IParticipantData;
+    tournamentState: tournamentStates;
 }
 
-const sizes = (numberOfParticipants: number) => {
+export const sizes = (numberOfParticipants: number) => {
     if (numberOfParticipants === 1) {
         return {
             height: (innerHeight: number) => `${innerHeight * 1 - 8}px`,
@@ -32,7 +34,8 @@ const sizes = (numberOfParticipants: number) => {
 const Preview: React.FunctionComponent<IProps> = ({
     html,
     numberOfParticipants,
-    participantData
+    participantData,
+    tournamentState
 }) => {
     const [currentVisible, setCurrentVisble] = React.useState(0);
     const refCurrentVisible = React.useRef(currentVisible);
@@ -73,8 +76,18 @@ const Preview: React.FunctionComponent<IProps> = ({
                 <div className={"previews__preview--bar-name"}>
                     {participantData.name}
                 </div>
-
                 <div style={{ flex: "1" }} />
+
+                {tournamentState === tournamentStates.FINISHED && (
+                    <div
+                        className={"app__settings--button"}
+                        onClick={() => {
+                            axios.post(`/new-winner/${participantData.uuid}`);
+                        }}
+                    >
+                        WINNER
+                    </div>
+                )}
                 <div
                     className={"app__settings--button"}
                     onClick={() => {
