@@ -1,4 +1,5 @@
 import axios from "axios";
+import * as classNames from "classnames";
 import * as React from "react";
 import useWindowSize from "../../hooks/useWindowSize";
 import { sizes } from "../Preview/Preview";
@@ -9,6 +10,7 @@ const Winners: React.FunctionComponent<{}> = () => {
     const [winners, setWinners] = useWinnersDataService();
     const windowSize = useWindowSize();
 
+    console.log(winners);
     return (
         <div className={"winners"}>
             <div className={"winners__title"}>
@@ -29,7 +31,10 @@ const Winners: React.FunctionComponent<{}> = () => {
                                 height: `${sizes(4).height(windowSize.height)}`,
                                 width: `${sizes(4).width(windowSize.width)}`
                             }}
-                            className={"winners__wrap--container"}
+                            className={classNames(
+                                "winners__wrap--container",
+                                winners[winnerKey].powerMode && "power-mode"
+                            )}
                             key={winnerKey}
                         >
                             <div className={"winners__wrap--container-bar"}>
@@ -37,6 +42,13 @@ const Winners: React.FunctionComponent<{}> = () => {
 
                                 <div style={{ flex: 1 }} />
 
+                                <div
+                                    className={
+                                        "winners__wrap--container-bar-streak"
+                                    }
+                                >
+                                    {winners[winnerKey].streak}
+                                </div>
                                 <div
                                     className={"app__settings--button"}
                                     onClick={() => {

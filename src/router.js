@@ -71,12 +71,12 @@ const setupRouter = (middleware, io) => {
         io.emit("participants-data", cache.getCache());
     });
 
-    router.post("/new-winner/:uuid", (req, res) => {
-        const uuid = req.params.uuid;
+    router.post("/new-winner", (req, res) => {
+        const body = req.body;
 
         cache.updateWinners({
             ...cache.getWinners(),
-            [uuid]: cache.getParticipant(uuid)
+            [body.uuid]: body
         });
 
         res.status(200).send();

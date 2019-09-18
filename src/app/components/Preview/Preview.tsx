@@ -82,7 +82,7 @@ const Preview: React.FunctionComponent<IProps> = ({
                     <div
                         className={"app__settings--button"}
                         onClick={() => {
-                            axios.post(`/new-winner/${participantData.uuid}`);
+                            axios.post(`/new-winner`, participantData);
                         }}
                     >
                         WINNER
