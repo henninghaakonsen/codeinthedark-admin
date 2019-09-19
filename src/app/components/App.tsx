@@ -24,7 +24,7 @@ const App: React.StatelessComponent = () => {
 
     const refTournamentState = React.useRef(tournamentState);
     refTournamentState.current = tournamentState;
-    const [countdownMinutes, setCountdownMinutes] = React.useState(0.5);
+    const [countdownMinutes, setCountdownMinutes] = React.useState(15);
 
     const [countdown, setCountdown] = React.useState<number>(0);
     const refCountdown = React.useRef(countdown);
