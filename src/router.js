@@ -41,7 +41,7 @@ class Cache {
 const cache = new Cache();
 
 const setupRouter = (middleware, io) => {
-    router.post("/text", (req, res) => {
+    router.post("/participant-data", (req, res) => {
         const body = req.body;
 
         cache.updateCache({
@@ -53,18 +53,18 @@ const setupRouter = (middleware, io) => {
         io.emit("participant-data", body);
     });
 
-    router.get("/text", (req, res) => {
+    router.get("/participant-data", (req, res) => {
         res.status(200).send(cache);
     });
 
-    router.delete("/text", (req, res) => {
+    router.delete("/participant-data", (req, res) => {
         cache.updateCache({});
 
         res.status(200).send();
         io.emit("reset", cache.getCache());
     });
 
-    router.delete("/text/:uuid", (req, res) => {
+    router.delete("/participant-data/:uuid", (req, res) => {
         cache.deleteElement(req.params.uuid);
 
         res.status(200).send();
@@ -90,10 +90,13 @@ const setupRouter = (middleware, io) => {
         io.emit("participants-winners", cache.getWinners());
     });
 
-    router.get("/result", (req, res) => {
+    router.get("/:arrangement/:pulje", (req, res) => {
         res.status(200).send(
             fs.readFileSync(
-                path.join(__dirname, "./assets/result.html"),
+                path.join(
+                    __dirname,
+                    `./assets/${req.params.arrangement}/${req.params.pulje}.html`
+                ),
                 "UTF-8"
             )
         );

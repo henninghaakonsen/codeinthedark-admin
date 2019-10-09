@@ -10,7 +10,6 @@ const Winners: React.FunctionComponent<{}> = () => {
     const [winners, setWinners] = useWinnersDataService();
     const windowSize = useWindowSize();
 
-    console.log(winners);
     return (
         <div className={"winners"}>
             <div className={"winners__title"}>

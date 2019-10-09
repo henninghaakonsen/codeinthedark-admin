@@ -91,7 +91,9 @@ const Preview: React.FunctionComponent<IProps> = ({
                 <div
                     className={"app__settings--button"}
                     onClick={() => {
-                        axios.delete(`/text/${participantData.uuid}`);
+                        axios.delete(
+                            `/participant-data/${participantData.uuid}`
+                        );
                     }}
                 >
                     X
