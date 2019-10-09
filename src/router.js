@@ -102,6 +102,18 @@ const setupRouter = (middleware, io) => {
         );
     });
 
+    router.get("/ressurshjelp/:arrangement/:pulje", (req, res) => {
+        res.status(200).send(
+            fs.readFileSync(
+                path.join(
+                    __dirname,
+                    `./assets/${req.params.arrangement}/${req.params.pulje}.json`
+                ),
+                "UTF-8"
+            )
+        );
+    });
+
     if (process.env.NODE_ENV === "development") {
         router.get("*", (req, res) => {
             res.writeHead(200, { "Content-Type": "text/html" });
