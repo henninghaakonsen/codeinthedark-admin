@@ -3,10 +3,25 @@ const express = require("express"),
     fs = require("fs"),
     router = express.Router();
 
+/**
+ * gamestate: status, gameEnd
+ */
+const statuses = {
+    IN_PROGRESS: "IN_PROGRESS",
+    WAITING: "WAITING"
+};
+
 class Cache {
     constructor() {
+        this.gameState = {
+            status: statuses.WAITING
+        };
         this.cache = {};
         this.winners = {};
+    }
+
+    setGameState(state) {
+        this.gameState = this.gameState;
     }
 
     updateCache(dirtyCache) {
@@ -15,6 +30,10 @@ class Cache {
 
     updateWinners(dirtyWinners) {
         this.winners = dirtyWinners;
+    }
+
+    getGameState(state) {
+        return this.gameState;
     }
 
     getCache() {
@@ -59,9 +78,17 @@ const setupRouter = (middleware, io) => {
 
     router.delete("/participant-data", (req, res) => {
         cache.updateCache({});
+        cache.setGameState();
 
         res.status(200).send();
+        io.emit("status", cache.getGameState());
         io.emit("reset", cache.getCache());
+    });
+
+    router.post("/start", (req, res) => {
+        cache.setGameState({
+            status: statuses.IN_PROGRESS
+        });
     });
 
     router.delete("/participant-data/:uuid", (req, res) => {

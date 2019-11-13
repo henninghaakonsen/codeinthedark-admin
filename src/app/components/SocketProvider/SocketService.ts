@@ -8,7 +8,7 @@ export class SocketService {
     /* tslint:enable */
 
     public init(): SocketService {
-        this.socket = io("/");
+        this.socket = io("/admin");
         return this;
     }
 
