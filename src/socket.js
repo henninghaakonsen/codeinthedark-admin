@@ -1,48 +1,79 @@
-const { cache } = require("./router");
+const { cache } = require('./router');
 
-let clients = [];
+let admins = [];
+let participants = {};
+
+const addAdmin = clientId => {
+    if (!admins.find(client => client.id === clientId)) {
+        admins.push({
+            id: clientId,
+        });
+    }
+    console.log('Admins after register: ', admins);
+};
+
+const removeAdmin = clientId => {
+    const updatedAdmins = admins.filter(client => client.id !== clientId);
+    admins = updatedAdmins;
+    console.log('Admins after unregister: ', admins);
+};
+
+const addParticipant = (clientId, gamePin) => {
+    if (participants[gamePin] === undefined) {
+        participants[gamePin] = [];
+    }
+
+    if (!participants[gamePin].find(client => client.id === clientId)) {
+        participants[gamePin].push({
+            id: clientId,
+        });
+    }
+    console.log('Participants after register: ', participants[gamePin]);
+};
+
+const removeParticipant = (clientId, gamePin) => {
+    if (participants[gamePin] === undefined) {
+        console.log(`Game PIN '${gamePin}' does not exist. Could not remove client '${clientId}'`);
+    } else {
+        const updatedParticipants = participants[gamePin].filter(client => client.id !== clientId);
+        participants[gamePin] = updatedParticipants;
+        console.log('Participants after unregister: ', participants[gamePin]);
+    }
+};
 
 const setupSocket = io => {
-    const onConnect = client => {
-        console.log("client connected =>", client.id);
-        io.emit("participants-data", cache.getCache());
-        io.emit("participants-winners", cache.getWinners());
-    };
+    const adminSocket = io.of('/admin');
+    const participantSocket = io.of('/participant');
 
-    const registerClient = client => {
-        client.on("register", () => {
-            if (!clients.find(client => client.id === client.id)) {
-                clients.push({
-                    id: client.id
-                });
-            }
+    adminSocket.on('connection', client => {
+        console.log(`admin connected => ${client.id}`);
+        addAdmin(client.id);
 
-            console.log(`clients after register: ${clients}`);
-            io.emit("participants-data", cache);
-        });
-    };
+        adminSocket.emit('participants-data', cache);
+        adminSocket.emit('participants-winners', cache.getWinners());
 
-    const unregisterClient = client => {
-        if (clients.find(client_find => client_find.id === client.id)) {
-            const updatedOnlineUsers = clients.filter(
-                user => user.id !== client.id
-            );
-            clients = updatedOnlineUsers;
+        client.on('disconnect', () => {
+            console.log(`admin disconnected => clientID: ${client.id}`);
 
-            console.log(`clients after unregister: ${clients}`);
-        }
-    };
-
-    io.on("connection", client => {
-        onConnect(client);
-        registerClient(client);
-
-        client.on("disconnect", function() {
-            console.log(`client disconnected => clientID: ${client.id}`);
-
-            unregisterClient(client);
+            removeAdmin(client.id);
         });
     });
+
+    participantSocket.on('connection', client => {
+        console.log(client.id);
+        const gamePin = client.handshake.query.gamePin;
+        addParticipant(client.id, gamePin);
+
+        participantSocket.connected[client.id].emit('gamestate', cache.getGameState(gamePin));
+
+        client.on('disconnect', () => {
+            console.log(`participant disconnected => clientID: ${client.id}`);
+
+            removeParticipant(client.id, gamePin);
+        });
+    });
+
+    return [adminSocket, participantSocket];
 };
 
 exports.setupSocket = setupSocket;
