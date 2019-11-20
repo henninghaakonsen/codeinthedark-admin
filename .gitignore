@@ -7,3 +7,5 @@ development
 production
 
 npm-debug.log
+
+.env
