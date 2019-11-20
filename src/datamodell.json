@@ -1,6 +1,5 @@
 {
   "games": {
-    "<gamepin>": {
       "gamepin": "123",
       "state": "IN_PROGRESS",
       "endTime": "14:45",
@@ -14,4 +13,3 @@
       ]
     }
   }
-}

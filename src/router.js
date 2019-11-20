@@ -61,6 +61,12 @@ class Cache {
 const cache = new Cache();
 
 const setupRouter = (middleware, io, adminSocket, participantSocket) => {
+    router.get('/games/create-game', async (req, res) => {
+        await databaseService.createGame(null, game => {
+            res.status(200).json(game);
+        });
+    });
+
     router.post('/participant-data', (req, res) => {
         const body = req.body;
 
@@ -73,23 +79,18 @@ const setupRouter = (middleware, io, adminSocket, participantSocket) => {
         io.emit('participant-data', body);
     });
 
-    router.put('/setState/:gamePin', (req, res) => {
+    router.put('/setState/:gamePin', async (req, res) => {
         const gamePin = req.params.gamePin;
 
-        cache.setGameState(
-            {
-                status: statuses.IN_PROGRESS,
-            },
-            gamePin
-        );
-        participantSocket.emit('gamestate', cache.getGameState(gamePin));
-        res.status(200).send();
+        const gamestate = await databaseService.setGameState(statuses.IN_PROGRESS, gamePin);
+        console.log(gamestate);
+        participantSocket.emit('gamestate', gamestate);
+        res.status(200).json(gamestate);
     });
 
     router.get('/participant-data', (req, res) => {
         res.status(200).send(cache);
     });
-    res.status(200).send();
 
     router.delete('/participant-data', (req, res) => {
         cache.updateCache({});
@@ -116,10 +117,7 @@ const setupRouter = (middleware, io, adminSocket, participantSocket) => {
     router.post('/new-winner', (req, res) => {
         const body = req.body;
 
-        databaseService.updateWinners({
-            ...cache.getWinners(),
-            [body.uuid]: body,
-        });
+        databaseService.updateWinners(body);
 
         res.status(200).send();
         io.emit('participants-winners', cache.getWinners());
@@ -130,6 +128,11 @@ const setupRouter = (middleware, io, adminSocket, participantSocket) => {
 
         res.status(200).send();
         io.emit('participants-winners', cache.getWinners());
+    });
+
+    router.put('/winners/:uuid/toggle/', async (req, res) => {
+        const toggledWinner = await databaseService.toggleWinner(req.params.uuid);
+        res.status(200).json(toggledWinner);
     });
 
     router.get('/:arrangement/:pulje', (req, res) => {
@@ -172,4 +175,3 @@ const setupRouter = (middleware, io, adminSocket, participantSocket) => {
 };
 
 exports.setupRouter = setupRouter;
-exports.cache = database;
