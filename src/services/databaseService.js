@@ -1,56 +1,55 @@
-const db = require("./database/db");
+const db = require('./database/db');
 
 class DatabaseService {
-  GAMES_COLLECTION = "games";
-  async updateGamestate(participantData) {
-    db.get().collection(GAMES_COLLECTION);
-  }
+    GAMES_COLLECTION = 'games';
 
-  updateWinners(dirtyWinner) {
-    db.get()
-      .collection(GAMES_COLLECTION)
-      .insertOne(dirtyWinner, function(err, result) {
-        if (err) {
-          console.log(
-            "Det var en feil ved oppdatering av vinnere til basen",
-            err
-          );
-        }
+    async setGameState(state, gamePin) {}
 
-        console.log(`${result.result.n} vinnere ble lagt til`);
-      });
-  }
+    async updateParticipant(participant, gamePin) {}
 
-  getCache() {
-    return this.cache;
-  }
+    async getGamestate(gamepin) {}
 
-  async getParticipant(uuid) {
-    const participant = await db
-      .get()
-      .collection(GAMES_COLLECTION)
-      .find({ uuid })
-      .toArray();
+    async deleteParticipant(participant, gamePin) {}
 
-    return participant;
-  }
+    async toggleWinner(participant, gamePin) {
+        // await db.collection(GAMES_COLLECTION).update({
+        // })
+    }
 
-  async getWinners() {
-    const winners = await db
-      .get()
-      .collection(GAMES_COLLECTION)
-      .find({})
-      .toArray();
-    return winners;
-  }
+    async updateGamestate(participantData) {
+        db.get().collection(GAMES_COLLECTION);
+    }
 
-  deleteElement(uuid) {
-    delete this.cache[uuid];
-  }
+    updateWinners(dirtyWinner) {
+        db.get()
+            .collection(GAMES_COLLECTION)
+            .insertOne(dirtyWinner, function(err, result) {
+                if (err) {
+                    console.log('Det var en feil ved oppdatering av vinnere til basen', err);
+                }
 
-  deleteWinner(uuid) {
-    delete this.winners[uuid];
-  }
+                console.log(`${result.result.n} vinnere ble lagt til`);
+            });
+    }
+
+    async getParticipant(uuid) {
+        const participant = await db
+            .get()
+            .collection(GAMES_COLLECTION)
+            .find({ uuid })
+            .toArray();
+
+        return participant;
+    }
+
+    async getWinners() {
+        const winners = await db
+            .get()
+            .collection(GAMES_COLLECTION)
+            .find({})
+            .toArray();
+        return winners;
+    }
 }
 
 module.export = DatabaseService;
