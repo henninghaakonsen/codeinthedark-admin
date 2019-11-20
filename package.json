@@ -54,6 +54,7 @@
         "moment-duration-format": "^2.3.2",
         "morgan": "^1.9.1",
         "optimize-css-assets-webpack-plugin": "^5.0.3",
+        "prettier": "^1.19.1",
         "react": "^16.9.0",
         "react-dom": "^16.9.0",
         "react-router": "^5.0.1",
