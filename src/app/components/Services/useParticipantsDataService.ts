@@ -1,59 +1,23 @@
-import * as React from "react";
-import { tournamentStates } from "../App";
-import { useSocket } from "../SocketProvider/SocketContext";
-import { IKeyPair, IParticipantData } from "../types";
+import * as React from 'react';
+import { useSocket } from '../SocketProvider/SocketContext';
+import { IGamestate } from '../types';
 
-const useParticipantsDataService = (): [
-    IKeyPair,
-    (keypair: IKeyPair) => void,
-    tournamentStates,
-    (tournamentState: tournamentStates) => void
-] => {
+const useParticipantsDataService = (gamepin: string): IGamestate | undefined => {
     const socket = useSocket();
-    const [contents, setContents] = React.useState<IKeyPair>({});
-    const refContents = React.useRef(contents);
-    refContents.current = contents;
-
-    const [tournamentState, setTournamentState] = React.useState(
-        tournamentStates.NOT_STARTED
-    );
-    const refTournamentState = React.useRef(tournamentState);
-    refTournamentState.current = tournamentState;
+    const [gamestate, setGamestate] = React.useState<IGamestate | undefined>(undefined);
 
     React.useEffect(() => {
-        socket.init();
-        const receiveParticipantData = socket.onParticipantData();
-        const receiveParticipantsData = socket.onParticipantsData();
-        const reset = socket.onReset();
+        socket.init(gamepin);
+        const receiveGameState = socket.onGameStateData(gamepin);
 
-        receiveParticipantData.subscribe(
-            (participantData: IParticipantData) => {
-                if (
-                    refContents.current &&
-                    refTournamentState.current === tournamentStates.IN_PROGRESS
-                ) {
-                    setContents({
-                        ...refContents.current,
-                        [participantData.uuid]: participantData
-                    });
-                }
-            }
-        );
-
-        receiveParticipantsData.subscribe((participantsData: IKeyPair) => {
-            if (refTournamentState.current === tournamentStates.IN_PROGRESS) {
-                setContents(participantsData);
-            }
-        });
-
-        reset.subscribe((participantsData: IKeyPair) => {
-            setContents(participantsData);
+        receiveGameState.subscribe((newGamestate: IGamestate) => {
+            setGamestate(newGamestate);
         });
 
         return () => socket.disconnect();
     }, [socket]);
 
-    return [contents, setContents, tournamentState, setTournamentState];
+    return gamestate;
 };
 
 export default useParticipantsDataService;

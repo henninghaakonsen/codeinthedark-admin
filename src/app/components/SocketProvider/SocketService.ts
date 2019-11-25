@@ -1,32 +1,24 @@
-import { fromEvent, Observable } from "rxjs";
-import * as io from "socket.io-client";
-import { IKeyPair, IParticipantData } from "../types";
+import { fromEvent, Observable } from 'rxjs';
+import * as io from 'socket.io-client';
+import { IGamestate, IKeyPair } from '../types';
 
 export class SocketService {
     /* tslint:disable */
     private socket: SocketIOClient.Socket = {} as SocketIOClient.Socket;
     /* tslint:enable */
 
-    public init(): SocketService {
-        this.socket = io("/admin");
+    public init(gamepin: string): SocketService {
+        this.socket = io('/admin', { query: `gamepin=${gamepin}` });
         return this;
     }
 
     // link message event to rxjs data source
-    public onParticipantData(): Observable<IParticipantData> {
-        return fromEvent(this.socket, "participant-data");
-    }
-
-    public onParticipantsData(): Observable<IKeyPair> {
-        return fromEvent(this.socket, "participants-data");
-    }
-
-    public onReset(): Observable<IKeyPair> {
-        return fromEvent(this.socket, "reset");
+    public onGameStateData(gamepin: string): Observable<IGamestate> {
+        return fromEvent(this.socket, `gamestate-${gamepin}`);
     }
 
     public onUpdatedWinners(): Observable<IKeyPair> {
-        return fromEvent(this.socket, "participants-winners");
+        return fromEvent(this.socket, `participants-winners`);
     }
 
     // disconnect - used when unmounting

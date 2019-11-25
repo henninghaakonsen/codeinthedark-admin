@@ -1,10 +1,9 @@
+const DatabaseService = require('./services/databaseService');
 const express = require('express'),
     path = require('path'),
     fs = require('fs'),
+    gamesConfig = require('./assets/gamesConfig'),
     router = express.Router();
-const DatabaseService = require('./services/databaseService');
-
-const databaseService = new DatabaseService();
 
 /**
  * gamestate: status, gameEnd
@@ -21,8 +20,8 @@ class Cache {
         this.winners = {};
     }
 
-    setGameState(state, gamePin) {
-        this.gameState[gamePin] = state;
+    setGameState(state, gamepin) {
+        this.gameState[gamepin] = state;
     }
 
     updateCache(dirtyCache) {
@@ -33,8 +32,8 @@ class Cache {
         this.winners = dirtyWinners;
     }
 
-    getGameState(gamePin) {
-        return this.gameState[gamePin];
+    getGameState(gamepin) {
+        return this.gameState[gamepin];
     }
 
     getCache() {
@@ -61,9 +60,12 @@ class Cache {
 const cache = new Cache();
 
 const setupRouter = (middleware, io, adminSocket, participantSocket) => {
-    router.get('/games/create-game', async (req, res) => {
-        await databaseService.createGame(null, game => {
+    const databaseService = new DatabaseService();
+
+    router.post('/games/create-game', async (req, res) => {
+        await databaseService.createGame(req.body.gameId, game => {
             res.status(200).json(game);
+            adminSocket.emit(`gamestate-${game.gamepin}`, game);
         });
     });
 
@@ -79,11 +81,10 @@ const setupRouter = (middleware, io, adminSocket, participantSocket) => {
         io.emit('participant-data', body);
     });
 
-    router.put('/setState/:gamePin', async (req, res) => {
-        const gamePin = req.params.gamePin;
+    router.put('/setState/:gamepin', async (req, res) => {
+        const gamepin = req.params.gamepin;
 
-        const gamestate = await databaseService.setGameState(statuses.IN_PROGRESS, gamePin);
-        console.log(gamestate);
+        const gamestate = await databaseService.setGameState(statuses.IN_PROGRESS, gamepin);
         participantSocket.emit('gamestate', gamestate);
         res.status(200).json(gamestate);
     });
@@ -99,12 +100,6 @@ const setupRouter = (middleware, io, adminSocket, participantSocket) => {
         res.status(200).send();
         io.emit('status', cache.getGameState());
         io.emit('reset', cache.getCache());
-    });
-
-    router.post('/start', (req, res) => {
-        cache.setGameState({
-            status: statuses.IN_PROGRESS,
-        });
     });
 
     router.delete('/participant-data/:uuid', (req, res) => {
@@ -135,22 +130,21 @@ const setupRouter = (middleware, io, adminSocket, participantSocket) => {
         res.status(200).json(toggledWinner);
     });
 
-    router.get('/:arrangement/:pulje', (req, res) => {
+    router.get('/games/:game', (req, res) => {
         res.status(200).send(
-            fs.readFileSync(
-                path.join(__dirname, `./assets/${req.params.arrangement}/${req.params.pulje}.html`),
-                'UTF-8'
-            )
+            fs.readFileSync(path.join(__dirname, `./assets/games/${req.params.game}.html`), 'UTF-8')
         );
     });
 
-    router.get('/ressurshjelp/:arrangement/:pulje', (req, res) => {
+    router.get('/ressurshjelp/:game', (req, res) => {
         res.status(200).send(
-            fs.readFileSync(
-                path.join(__dirname, `./assets/${req.params.arrangement}/${req.params.pulje}.json`),
-                'UTF-8'
-            )
+            fs.readFileSync(path.join(__dirname, `./assets/games/${req.params.game}.json`), 'UTF-8')
         );
+    });
+
+    // Games
+    router.get('/games', (req, res) => {
+        res.status(200).send(gamesConfig);
     });
 
     if (process.env.NODE_ENV === 'development') {
@@ -174,4 +168,4 @@ const setupRouter = (middleware, io, adminSocket, participantSocket) => {
     return router;
 };
 
-exports.setupRouter = setupRouter;
+exports.setupReouter = setupRouter;
