@@ -29,7 +29,7 @@ const StartScreen: React.FunctionComponent = () => {
 
             <div className={'startscreen__konfigurasjon'}>
                 <div className={'startscreen__konfigurasjon--valg'}>
-                    <h3>Velg spill og trykk START</h3>
+                    <h3>Velg spill og trykk 'Opprett spill'</h3>
                 </div>
 
                 <div className={'startscreen__konfigurasjon--carousel'}>
