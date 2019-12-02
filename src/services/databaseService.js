@@ -49,14 +49,11 @@ class DatabaseService {
             );
     }
 
-    getGamestate(gamepin, cb) {
-        db.get()
+    async getGamestate(gamepin, cb) {
+        return await db
+            .get()
             .collection(this.GAMES_COLLECTION)
-            .findOne({ gamepin: parseInt(gamepin) }, (err, result) => {
-                assert.equal(null, err);
-
-                cb(result);
-            });
+            .findOne({ gamepin: parseInt(gamepin) });
     }
 
     async updateGamestate(participantData) {

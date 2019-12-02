@@ -11,7 +11,6 @@ const useGamestate = (gamepin: string): IGamestate | undefined => {
         const receiveGameState = socket.onGameStateData(gamepin);
 
         receiveGameState.subscribe((newGamestate: IGamestate) => {
-            console.log(newGamestate);
             setGamestate(newGamestate);
         });
 
