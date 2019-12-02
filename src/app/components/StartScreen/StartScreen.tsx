@@ -25,7 +25,7 @@ const StartScreen: React.FunctionComponent = () => {
 
     return (
         <div className={'startscreen'}>
-            <h1 children={'Code in the Dark, by Bekk'} />
+            <h1>Code in the Dark, by Bekk</h1>
 
             <div className={'startscreen__konfigurasjon'}>
                 <div className={'startscreen__konfigurasjon--valg'}>
