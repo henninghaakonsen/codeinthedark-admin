@@ -4,13 +4,37 @@ const service = new DatabaseService();
 
 const participants = express.Router();
 
-participants.post('/create', async (req, res, next) => {
+participants.post('/create', async (req, res) => {
     const {
-        body: { uuid, gamepin },
+        body: { uuid, gamepin, name },
     } = req;
-    const participantState = await service.getParticipantState(gamepin, uuid);
-    if (participantState.length > 0) {
-        res.json({ data: participantState[0] });
+    let gamestate = await service.getGamestate(gamepin);
+
+    if (gamestate) {
+        const newParticipant = {
+            name: name,
+            uuid: uuid,
+            gamepin: gamepin,
+            content: `<html>
+                        <style>
+
+                        </style>
+                        <body>
+
+                        </body>
+                    </html>`,
+        };
+
+        gamestate.participants = {
+            ...gamestate.participants,
+            [uuid]: newParticipant,
+        };
+
+        console.log('Gamestate før update', gamestate);
+
+        service.updateGamestate(gamestate);
+
+        res.status(200).json(newParticipant);
     } else {
         res.status(404).json({
             message: `Gamestate for spill med game-pin ${gamepin} finnes ikke.`,

@@ -18,7 +18,7 @@ class DatabaseService {
                     status: 'UNINITIALIZED',
                     endTime: undefined,
                     startTime: undefined,
-                    participants: [],
+                    participants: {},
                 },
                 (error, response) => {
                     if (error) {
@@ -67,11 +67,19 @@ class DatabaseService {
         return await db
             .get()
             .collection(this.GAMES_COLLECTION)
-            .find({ gamepin: gamepin });
+            .findOne({ gamepin: gamepin });
     }
 
-    async updateGamestate(participantData) {
-        db.get().collection(this.GAMES_COLLECTION);
+    async updateGamestate(gamestate) {
+        const updatedGameState = await db
+            .get()
+            .collection(this.GAMES_COLLECTION)
+            .updateOne(
+                { gamepin: gamestate.gamepin },
+                { $set: { participants: gamestate.participants } }
+            );
+
+        return updatedGameState;
     }
 
     // PARTICIPANTS
