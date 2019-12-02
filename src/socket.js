@@ -1,4 +1,4 @@
-const { cache } = require('./router');
+const DatabaseService = require('./services/databaseService');
 
 let admins = [];
 let participants = {};
@@ -18,39 +18,43 @@ const removeAdmin = clientId => {
     console.log('Admins after unregister: ', admins);
 };
 
-const addParticipant = (clientId, gamePin) => {
-    if (participants[gamePin] === undefined) {
-        participants[gamePin] = [];
+const addParticipant = (clientId, gamepin) => {
+    if (participants[gamepin] === undefined) {
+        participants[gamepin] = [];
     }
 
-    if (!participants[gamePin].find(client => client.id === clientId)) {
-        participants[gamePin].push({
+    if (!participants[gamepin].find(client => client.id === clientId)) {
+        participants[gamepin].push({
             id: clientId,
         });
     }
-    console.log('Participants after register: ', participants[gamePin]);
+    console.log('Participants after register: ', participants[gamepin]);
 };
 
-const removeParticipant = (clientId, gamePin) => {
-    if (participants[gamePin] === undefined) {
-        console.log(`Game PIN '${gamePin}' does not exist. Could not remove client '${clientId}'`);
+const removeParticipant = (clientId, gamepin) => {
+    if (participants[gamepin] === undefined) {
+        console.log(`Game PIN '${gamepin}' does not exist. Could not remove client '${clientId}'`);
     } else {
-        const updatedParticipants = participants[gamePin].filter(client => client.id !== clientId);
-        participants[gamePin] = updatedParticipants;
-        console.log('Participants after unregister: ', participants[gamePin]);
+        const updatedParticipants = participants[gamepin].filter(client => client.id !== clientId);
+        participants[gamepin] = updatedParticipants;
+        console.log('Participants after unregister: ', participants[gamepin]);
     }
 };
 
 const setupSocket = io => {
+    const databaseService = new DatabaseService();
     const adminSocket = io.of('/admin');
     const participantSocket = io.of('/participant');
 
     adminSocket.on('connection', client => {
         console.log(`admin connected => ${client.id}`);
+        const gamepin = client.handshake.query.gamepin;
         addAdmin(client.id);
 
-        adminSocket.emit('participants-data', cache);
-        adminSocket.emit('participants-winners', cache.getWinners());
+        adminSocket.emit(`gamestate-${gamepin}`, databaseService.getGamestate(gamepin));
+
+        //adminSocket.emit('participants-data', cache);
+        //adminSocket.emit('participants-winners', cache.getWinners());
 
         client.on('disconnect', () => {
             console.log(`admin disconnected => clientID: ${client.id}`);
@@ -61,15 +65,15 @@ const setupSocket = io => {
 
     participantSocket.on('connection', client => {
         console.log(client.id);
-        const gamePin = client.handshake.query.gamePin;
-        addParticipant(client.id, gamePin);
+        const gamepin = client.handshake.query.gamepin;
+        addParticipant(client.id, gamepin);
 
-        participantSocket.connected[client.id].emit('gamestate', cache.getGameState(gamePin));
+        //participantSocket.connected[client.id].emit('gamestate', cache.getGameState(gamepin));
 
         client.on('disconnect', () => {
             console.log(`participant disconnected => clientID: ${client.id}`);
 
-            removeParticipant(client.id, gamePin);
+            removeParticipant(client.id, gamepin);
         });
     });
 

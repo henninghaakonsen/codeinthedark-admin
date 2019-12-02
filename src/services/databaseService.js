@@ -3,16 +3,18 @@ const db = require('../database/db');
 class DatabaseService {
     GAMES_COLLECTION = 'games';
 
-    // GENERELT GAME
-    async createGame(resultatId, cb) {
+    // GENERATE GAME
+    createGame = (gameId, cb) => {
         // TODO Kan vi garantere at det blir unik gamepin hver gang?
         // Må vi sjekke gamepin som finnes fra før?
-        const gamePin = Math.floor(1000 + Math.random() * 9000);
+        const gamepin = Math.floor(1000 + Math.random() * 9000);
         db.get()
             .collection(this.GAMES_COLLECTION)
             .insertOne(
                 {
-                    gamePin,
+                    created: new Date().toISOString(),
+                    gameId,
+                    gamepin,
                     status: 'UNINITIALIZED',
                     endTime: undefined,
                     startTime: undefined,
@@ -22,18 +24,18 @@ class DatabaseService {
                     if (error) {
                         console.log('Klarte ikke opprette et nytt spill', error);
                     }
-                    cb(response.ops);
+                    cb(response.ops[0]);
                 }
             );
-    }
+    };
 
     // GAME  STATE
-    async setGameState(status, gamePin) {
+    async setGameState(status, gamepin) {
         return await db
             .get()
             .collection(this.GAMES_COLLECTION)
             .findOneAndUpdate(
-                { gamePin: parseInt(gamePin) },
+                { gamepin: parseInt(gamepin) },
                 {
                     $set: {
                         status: status,
@@ -44,15 +46,21 @@ class DatabaseService {
                 }
             );
     }
-    async getGamestate(gamepin) {}
+    async getGamestate(gamepin) {
+        return await db
+            .get()
+            .collection(this.GAMES_COLLECTION)
+            .find({ gamepin: parseInt(gamepin) });
+    }
+
     async updateGamestate(participantData) {
         db.get().collection(this.GAMES_COLLECTION);
     }
 
     // PARTICIPANTS
-    async updateParticipant(participant, gamePin) {}
+    async updateParticipant(participant, gamepin) {}
 
-    async deleteParticipant(participant, gamePin) {
+    async deleteParticipant(participant, gamepin) {
         return await db.get().collection(this.GAMES_COLLECTION);
     }
 
