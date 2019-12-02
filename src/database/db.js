@@ -5,6 +5,7 @@ let db;
 // Connection URL
 const user = process.env.MONGODB_USER;
 const password = process.env.MONGODB_PWD;
+console.log('User', user);
 const url = `mongodb://${user}:${password}@ds061928.mlab.com:61928/heroku_rqjv6zp9`;
 
 const MongoClient = new mongodb.MongoClient(url, {
