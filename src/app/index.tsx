@@ -2,11 +2,11 @@ import * as React from 'react';
 import { render } from 'react-dom';
 import { BrowserRouter as Router, Route, Switch, useHistory } from 'react-router-dom';
 import Game from './components/Game/Game';
-import WaitingGame from './components/Game/WaitingGame';
-import useParticipantsDataService from './components/Services/useParticipantsDataService';
+import useGamestate from './components/Services/useGamestate';
 import SocketProvider from './components/SocketProvider/SocketProvider';
 import StartScreen from './components/StartScreen/StartScreen';
 import { tournamentStates } from './components/types';
+import WaitingScreen from './components/WaitingScreen/WaitingScreen';
 import Winners from './components/Winners/Winners';
 import './index.less';
 
@@ -35,13 +35,12 @@ interface IProps {
 }
 
 const GameStates: React.StatelessComponent<IProps> = ({ gamepin }) => {
-    const history = useHistory();
-    const gamestate = useParticipantsDataService(gamepin);
+    const gamestate = useGamestate(gamepin);
 
     if (gamestate) {
         switch (gamestate.status) {
             case tournamentStates.NOT_STARTED:
-                return <WaitingGame gamestate={gamestate} />;
+                return <WaitingScreen gamestate={gamestate} />;
             case tournamentStates.IN_PROGRESS:
                 return <Game gamestate={gamestate} />;
             default:

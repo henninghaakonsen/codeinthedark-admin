@@ -4,7 +4,7 @@ import * as React from 'react';
 import useWindowSize from '../../hooks/useWindowSize';
 import { sizes } from '../Preview/Preview';
 import useWinnersDataService from '../Services/useWinnersDataService';
-import { IParticipantData } from '../types';
+import { IParticipant } from '../types';
 
 const Winners: React.FunctionComponent<{}> = () => {
     const [winners, setWinners] = useWinnersDataService();
@@ -17,7 +17,7 @@ const Winners: React.FunctionComponent<{}> = () => {
             </div>
             <div className={'winners__wrap'}>
                 {Object.keys(winners).map((winnerKey: any) => {
-                    const participantData: IParticipantData = winners[winnerKey];
+                    const participantData: IParticipant = winners[winnerKey];
                     const body = participantData.content.replace(/(\r\n|\n|\r)/gm, '');
 
                     return (

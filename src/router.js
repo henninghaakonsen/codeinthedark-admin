@@ -81,12 +81,13 @@ const setupRouter = (middleware, io, adminSocket, participantSocket) => {
         io.emit('participant-data', body);
     });
 
-    router.put('/setState/:gamepin', async (req, res) => {
+    router.put('/game/:gamepin/update-state', async (req, res) => {
         const { gamepin } = req.params;
+        const { gamestatus } = req.body;
 
-        const gamestate = await databaseService.setGameState(statuses.IN_PROGRESS, gamepin);
-        participantSocket.emit('gamestate', gamestate);
-        res.status(200).json(gamestate);
+        const gamestate = await databaseService.setGameState(gamestatus, gamepin);
+        adminSocket.emit(`gamestate-${gamepin}`, gamestate.value);
+        res.status(200);
     });
 
     router.get('/participant-data', (req, res) => {

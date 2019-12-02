@@ -3,7 +3,7 @@ import * as moment from 'moment';
 import 'moment-duration-format';
 import * as React from 'react';
 import Preview from '../Preview/Preview';
-import { IGamestate, IParticipantData, tournamentStates } from '../types';
+import { IGamestate, IParticipant, tournamentStates } from '../types';
 
 interface IProps {
     gamestate: IGamestate;
@@ -49,7 +49,7 @@ const Game: React.StatelessComponent<IProps> = ({ gamestate }) => {
                 )}
             </div>
             <div className={'previews'}>
-                {gamestate.participants.map((participantData: IParticipantData) => {
+                {gamestate.participants.map((participantData: IParticipant) => {
                     const body = participantData.content.replace(/(\r\n|\n|\r)/gm, '');
 
                     return (

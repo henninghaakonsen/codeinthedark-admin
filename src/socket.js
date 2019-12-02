@@ -46,15 +46,13 @@ const setupSocket = io => {
     const adminSocket = io.of('/admin');
     const participantSocket = io.of('/participant');
 
-    adminSocket.on('connection', client => {
-        console.log(`admin connected => ${client.id}`);
+    adminSocket.on('connection', async client => {
         const gamepin = client.handshake.query.gamepin;
+        console.log(`admin connected to gamepin ${gamepin} => ${client.id}`);
         addAdmin(client.id);
 
-        adminSocket.emit(`gamestate-${gamepin}`, databaseService.getGamestate(gamepin));
-
-        //adminSocket.emit('participants-data', cache);
-        //adminSocket.emit('participants-winners', cache.getWinners());
+        const gamestate = await databaseService.getGamestate(gamepin);
+        adminSocket.emit(`gamestate-${gamepin}`, gamestate);
 
         client.on('disconnect', () => {
             console.log(`admin disconnected => clientID: ${client.id}`);

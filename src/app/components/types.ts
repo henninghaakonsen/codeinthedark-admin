@@ -1,7 +1,8 @@
 export enum tournamentStates {
-    NOT_STARTED,
-    IN_PROGRESS,
-    FINISHED,
+    CANCELLED = 'CANCELLED',
+    FINISHED = 'FINISHED',
+    IN_PROGRESS = 'IN_PROGRESS',
+    NOT_STARTED = 'NOT_STARTED',
 }
 
 export interface IGamestate {
@@ -11,10 +12,10 @@ export interface IGamestate {
     status: tournamentStates;
     endTime: string;
     startTime: string;
-    participants: IParticipantData[];
+    participants: IParticipant[];
 }
 
-export interface IParticipantData {
+export interface IParticipant {
     animate: boolean;
     animationKey: number;
     content: string;
@@ -26,5 +27,5 @@ export interface IParticipantData {
 }
 
 export interface IKeyPair {
-    [key: string]: IParticipantData;
+    [key: string]: IParticipant;
 }
