@@ -3,9 +3,14 @@
     src: url("/assets/PressStart2P-Regular.ttf") format('truetype');
 }
 
+@font-face {
+  font-family: 'Chicken Dinner';
+  src: url("/assets/Chicken Dinner Demo.otf") format('truetype');
+}
+
 body,
 html {
-  font-family: 'Press Start 2P', sans-serif;
+  //font-family: 'Chicken Dinner', sans-serif;
   width: 100%;
   height: 100%;
   overflow: hidden;
@@ -13,5 +18,6 @@ html {
   margin: 0;
 }
 
-@import "./components/app.less";
+@import "./components/StartScreen/startscreen.less";
+@import "./components/Game/game.less";
 @import "./components/Winners/winners.less";

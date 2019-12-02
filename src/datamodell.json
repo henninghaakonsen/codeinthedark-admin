@@ -1,0 +1,16 @@
+{
+  "games": {
+      "gameId": "ping",
+      "gamepin": "123",
+      "state": "IN_PROGRESS",
+      "endTime": "14:45",
+      "startTime": "13:15",
+      "participants": [
+        {
+          "socketId": "2334343",
+          "content": "<html></html>",
+          "streak": true
+        }
+      ]
+    }
+  }

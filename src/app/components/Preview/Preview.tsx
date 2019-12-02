@@ -1,9 +1,8 @@
-import axios from "axios";
-import * as classNames from "classnames";
-import * as React from "react";
-import useWindowSize from "../../hooks/useWindowSize";
-import { tournamentStates } from "../App";
-import { IParticipantData } from "../types";
+import axios from 'axios';
+import * as classNames from 'classnames';
+import * as React from 'react';
+import useWindowSize from '../../hooks/useWindowSize';
+import { IParticipantData, tournamentStates } from '../types';
 
 interface IProps {
     html: string;
@@ -16,17 +15,17 @@ export const sizes = (numberOfParticipants: number) => {
     if (numberOfParticipants === 1) {
         return {
             height: (innerHeight: number) => `${innerHeight * 1 - 8}px`,
-            width: (innerWidth: number) => `${innerWidth * 1 - 24}px`
+            width: (innerWidth: number) => `${innerWidth * 1 - 24}px`,
         };
     } else if (numberOfParticipants <= 4) {
         return {
             height: (innerHeight: number) => `${innerHeight * 0.5 - 8}px`,
-            width: (innerWidth: number) => `${innerWidth * 0.5 - 24}px`
+            width: (innerWidth: number) => `${innerWidth * 0.5 - 24}px`,
         };
     } else {
         return {
             height: (innerHeight: number) => `100%`,
-            width: (innerWidth: number) => `100%`
+            width: (innerWidth: number) => `100%`,
         };
     }
 };
@@ -35,7 +34,7 @@ const Preview: React.FunctionComponent<IProps> = ({
     html,
     numberOfParticipants,
     participantData,
-    tournamentState
+    tournamentState,
 }) => {
     const [currentVisible, setCurrentVisble] = React.useState(0);
     const refCurrentVisible = React.useRef(currentVisible);
@@ -61,26 +60,19 @@ const Preview: React.FunctionComponent<IProps> = ({
     return (
         <div
             style={{
-                height: `${sizes(numberOfParticipants).height(
-                    windowSize.height
-                )}`,
-                width: `${sizes(numberOfParticipants).width(windowSize.width)}`
+                height: `${sizes(numberOfParticipants).height(windowSize.height)}`,
+                width: `${sizes(numberOfParticipants).width(windowSize.width)}`,
             }}
-            className={classNames(
-                "previews__preview",
-                participantData.powerMode && "power-mode"
-            )}
+            className={classNames('previews__preview', participantData.powerMode && 'power-mode')}
             key={participantData.uuid}
         >
-            <div className={"previews__preview--bar"}>
-                <div className={"previews__preview--bar-name"}>
-                    {participantData.name}
-                </div>
-                <div style={{ flex: "1" }} />
+            <div className={'previews__preview--bar'}>
+                <div className={'previews__preview--bar-name'}>{participantData.name}</div>
+                <div style={{ flex: '1' }} />
 
                 {tournamentState === tournamentStates.FINISHED && (
                     <div
-                        className={"app__settings--button"}
+                        className={'app__settings--button'}
                         onClick={() => {
                             axios.post(`/new-winner`, participantData);
                         }}
@@ -89,11 +81,9 @@ const Preview: React.FunctionComponent<IProps> = ({
                     </div>
                 )}
                 <div
-                    className={"app__settings--button"}
+                    className={'app__settings--button'}
                     onClick={() => {
-                        axios.delete(
-                            `/participant-data/${participantData.uuid}`
-                        );
+                        axios.delete(`/participant-data/${participantData.uuid}`);
                     }}
                 >
                     X
@@ -102,39 +92,31 @@ const Preview: React.FunctionComponent<IProps> = ({
 
             <div className="streak-container">
                 <div className="current">Combo</div>
-                <div
-                    key={participantData.animationKey}
-                    className="counter bump"
-                >
+                <div key={participantData.animationKey} className="counter bump">
                     {participantData.streak}
                 </div>
                 <div
                     key={participantData.animationKey + 1}
                     className={`bar ${
-                        participantData.animate && participantData.streak !== 0
-                            ? "animate"
-                            : ""
+                        participantData.animate && participantData.streak !== 0 ? 'animate' : ''
                     }`}
                 />
                 <div className="exclamations">
                     {participantData.exclamation && (
-                        <span
-                            key={participantData.exclamation}
-                            className="exclamation"
-                        >
+                        <span key={participantData.exclamation} className="exclamation">
                             {participantData.exclamation}
                         </span>
                     )}
                 </div>
             </div>
 
-            <div className={"previews__preview__iframecontainer"}>
+            <div className={'previews__preview__iframecontainer'}>
                 <iframe
-                    className={currentVisible === 0 ? "visible" : "hidden"}
+                    className={currentVisible === 0 ? 'visible' : 'hidden'}
                     srcDoc={firstHtml}
                 />
                 <iframe
-                    className={currentVisible === 1 ? "visible" : "hidden"}
+                    className={currentVisible === 1 ? 'visible' : 'hidden'}
                     srcDoc={secondHtml}
                 />
             </div>

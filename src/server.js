@@ -1,3 +1,4 @@
+require('dotenv').config();
 const bodyParser = require('body-parser');
 const express = require('express');
 const path = require('path');
@@ -5,6 +6,7 @@ const cookieParser = require('cookie-parser');
 const logger = require('morgan');
 const http = require('http');
 const socketIo = require('socket.io');
+const db = require('./database/db');
 
 const config = require('../webpack.dev'),
     webpack = require('webpack'),
@@ -55,6 +57,8 @@ const [adminSocket, participantSocket] = socket.setupSocket(io);
 
 app.use('/', router.setupRouter(middleware, io, adminSocket, participantSocket));
 
-server.listen(port, () => {
-    console.log(`Started server on ` + port);
+db.connect(() => {
+    server.listen(port, () => {
+        console.log(`Started server on ` + port);
+    });
 });

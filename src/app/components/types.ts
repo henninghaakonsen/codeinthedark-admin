@@ -1,3 +1,19 @@
+export enum tournamentStates {
+    NOT_STARTED,
+    IN_PROGRESS,
+    FINISHED,
+}
+
+export interface IGamestate {
+    created: string;
+    gameId: string;
+    gamepin: string;
+    status: tournamentStates;
+    endTime: string;
+    startTime: string;
+    participants: IParticipantData[];
+}
+
 export interface IParticipantData {
     animate: boolean;
     animationKey: number;

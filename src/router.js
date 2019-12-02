@@ -1,6 +1,8 @@
+const DatabaseService = require('./services/databaseService');
 const express = require('express'),
     path = require('path'),
     fs = require('fs'),
+    gamesConfig = require('./assets/gamesConfig'),
     router = express.Router();
 
 /**
@@ -18,8 +20,8 @@ class Cache {
         this.winners = {};
     }
 
-    setGameState(state, gamePin) {
-        this.gameState[gamePin] = state;
+    setGameState(state, gamepin) {
+        this.gameState[gamepin] = state;
     }
 
     updateCache(dirtyCache) {
@@ -30,8 +32,8 @@ class Cache {
         this.winners = dirtyWinners;
     }
 
-    getGameState(gamePin) {
-        return this.gameState[gamePin];
+    getGameState(gamepin) {
+        return this.gameState[gamepin];
     }
 
     getCache() {
@@ -58,6 +60,15 @@ class Cache {
 const cache = new Cache();
 
 const setupRouter = (middleware, io, adminSocket, participantSocket) => {
+    const databaseService = new DatabaseService();
+
+    router.post('/games/create-game', async (req, res) => {
+        await databaseService.createGame(req.body.gameId, game => {
+            res.status(200).json(game);
+            adminSocket.emit(`gamestate-${game.gamepin}`, game);
+        });
+    });
+
     router.post('/participant-data', (req, res) => {
         const body = req.body;
 
@@ -70,17 +81,12 @@ const setupRouter = (middleware, io, adminSocket, participantSocket) => {
         io.emit('participant-data', body);
     });
 
-    router.put('/setState/:gamePin', (req, res) => {
-        const gamePin = req.params.gamePin;
+    router.put('/setState/:gamepin', async (req, res) => {
+        const { gamepin } = req.params;
 
-        cache.setGameState(
-            {
-                status: statuses.IN_PROGRESS,
-            },
-            gamePin
-        );
-        participantSocket.emit('gamestate', cache.getGameState(gamePin));
-        res.status(200).send();
+        const gamestate = await databaseService.setGameState(statuses.IN_PROGRESS, gamepin);
+        participantSocket.emit('gamestate', gamestate);
+        res.status(200).json(gamestate);
     });
 
     router.get('/participant-data', (req, res) => {
@@ -96,12 +102,6 @@ const setupRouter = (middleware, io, adminSocket, participantSocket) => {
         io.emit('reset', cache.getCache());
     });
 
-    router.post('/start', (req, res) => {
-        cache.setGameState({
-            status: statuses.IN_PROGRESS,
-        });
-    });
-
     router.delete('/participant-data/:uuid', (req, res) => {
         cache.deleteElement(req.params.uuid);
 
@@ -112,10 +112,7 @@ const setupRouter = (middleware, io, adminSocket, participantSocket) => {
     router.post('/new-winner', (req, res) => {
         const body = req.body;
 
-        cache.updateWinners({
-            ...cache.getWinners(),
-            [body.uuid]: body,
-        });
+        databaseService.updateWinners(body);
 
         res.status(200).send();
         io.emit('participants-winners', cache.getWinners());
@@ -128,22 +125,26 @@ const setupRouter = (middleware, io, adminSocket, participantSocket) => {
         io.emit('participants-winners', cache.getWinners());
     });
 
-    router.get('/:arrangement/:pulje', (req, res) => {
+    router.put('/winners/:uuid/toggle/', async (req, res) => {
+        const toggledWinner = await databaseService.toggleWinner(req.params.uuid);
+        res.status(200).json(toggledWinner);
+    });
+
+    router.get('/games/:game', (req, res) => {
         res.status(200).send(
-            fs.readFileSync(
-                path.join(__dirname, `./assets/${req.params.arrangement}/${req.params.pulje}.html`),
-                'UTF-8'
-            )
+            fs.readFileSync(path.join(__dirname, `./assets/games/${req.params.game}.html`), 'UTF-8')
         );
     });
 
-    router.get('/ressurshjelp/:arrangement/:pulje', (req, res) => {
+    router.get('/ressurshjelp/:game', (req, res) => {
         res.status(200).send(
-            fs.readFileSync(
-                path.join(__dirname, `./assets/${req.params.arrangement}/${req.params.pulje}.json`),
-                'UTF-8'
-            )
+            fs.readFileSync(path.join(__dirname, `./assets/games/${req.params.game}.json`), 'UTF-8')
         );
+    });
+
+    // Games
+    router.get('/games', (req, res) => {
+        res.status(200).send(gamesConfig);
     });
 
     if (process.env.NODE_ENV === 'development') {
@@ -168,4 +169,3 @@ const setupRouter = (middleware, io, adminSocket, participantSocket) => {
 };
 
 exports.setupRouter = setupRouter;
-exports.cache = cache;
