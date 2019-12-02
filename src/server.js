@@ -17,6 +17,8 @@ const config = require('../webpack.dev'),
 
 const port = process.env.PORT || 9000;
 
+const participants = require('./routes/participants');
+
 const app = express();
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
@@ -55,6 +57,7 @@ const server = http.createServer(app);
 let io = socketIo(server);
 const [adminSocket, participantSocket] = socket.setupSocket(io);
 
+app.use('/participant', participants);
 app.use('/', router.setupRouter(middleware, io, adminSocket, participantSocket));
 
 db.connect(() => {
