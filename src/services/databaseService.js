@@ -1,3 +1,5 @@
+const assert = require('assert');
+
 const db = require('../database/db');
 
 class DatabaseService {
@@ -15,7 +17,7 @@ class DatabaseService {
                     created: new Date().toISOString(),
                     gameId,
                     gamepin,
-                    status: 'UNINITIALIZED',
+                    status: 'NOT_STARTED',
                     endTime: undefined,
                     startTime: undefined,
                     participants: [],
@@ -46,11 +48,15 @@ class DatabaseService {
                 }
             );
     }
-    async getGamestate(gamepin) {
-        return await db
-            .get()
+
+    getGamestate(gamepin, cb) {
+        db.get()
             .collection(this.GAMES_COLLECTION)
-            .find({ gamepin: parseInt(gamepin) });
+            .findOne({ gamepin: parseInt(gamepin) }, (err, result) => {
+                assert.equal(null, err);
+
+                cb(result);
+            });
     }
 
     async updateGamestate(participantData) {
