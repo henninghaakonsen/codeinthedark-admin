@@ -168,4 +168,4 @@ const setupRouter = (middleware, io, adminSocket, participantSocket) => {
     return router;
 };
 
-exports.setupReouter = setupRouter;
+exports.setupRouter = setupRouter;
