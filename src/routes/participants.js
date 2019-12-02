@@ -16,21 +16,19 @@ participants.post('/create', async (req, res) => {
             uuid: uuid,
             gamepin: gamepin,
             content: `<html>
-                        <style>
+    <style>
 
-                        </style>
-                        <body>
+    </style>
+    <body>
 
-                        </body>
-                    </html>`,
+    </body>
+</html>`,
         };
 
         gamestate.participants = {
             ...gamestate.participants,
             [uuid]: newParticipant,
         };
-
-        console.log('Gamestate før update', gamestate);
 
         service.updateGamestate(gamestate);
 
