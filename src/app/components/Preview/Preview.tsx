@@ -2,12 +2,12 @@ import axios from 'axios';
 import * as classNames from 'classnames';
 import * as React from 'react';
 import useWindowSize from '../../hooks/useWindowSize';
-import { IParticipantData, tournamentStates } from '../types';
+import { IParticipant, tournamentStates } from '../types';
 
 interface IProps {
     html: string;
     numberOfParticipants: number;
-    participantData: IParticipantData;
+    participantData: IParticipant;
     tournamentState: tournamentStates;
 }
 

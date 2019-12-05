@@ -2,7 +2,7 @@ import * as React from 'react';
 import { useSocket } from '../SocketProvider/SocketContext';
 import { IGamestate } from '../types';
 
-const useParticipantsDataService = (gamepin: string): IGamestate | undefined => {
+const useGamestate = (gamepin: string): IGamestate | undefined => {
     const socket = useSocket();
     const [gamestate, setGamestate] = React.useState<IGamestate | undefined>(undefined);
 
@@ -20,4 +20,4 @@ const useParticipantsDataService = (gamepin: string): IGamestate | undefined => 
     return gamestate;
 };
 
-export default useParticipantsDataService;
+export default useGamestate;

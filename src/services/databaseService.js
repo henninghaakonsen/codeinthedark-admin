@@ -1,3 +1,5 @@
+const assert = require('assert');
+
 const db = require('../database/db');
 
 class DatabaseService {
@@ -7,7 +9,7 @@ class DatabaseService {
     createGame = (gameId, cb) => {
         // TODO Kan vi garantere at det blir unik gamepin hver gang?
         // Må vi sjekke gamepin som finnes fra før?
-        const gamepin = Math.floor(1000 + Math.random() * 9000);
+        const gamepin = Math.floor(1000 + Math.random() * 9000).toString();
         db.get()
             .collection(this.GAMES_COLLECTION)
             .insertOne(
@@ -15,10 +17,10 @@ class DatabaseService {
                     created: new Date().toISOString(),
                     gameId,
                     gamepin,
-                    status: 'UNINITIALIZED',
+                    status: 'NOT_STARTED',
                     endTime: undefined,
                     startTime: undefined,
-                    participants: [],
+                    participants: {},
                 },
                 (error, response) => {
                     if (error) {
@@ -27,6 +29,23 @@ class DatabaseService {
                     cb(response.ops[0]);
                 }
             );
+    };
+
+    getParticipantState = async (gamepin, uuid) => {
+        const gamestate = await db
+            .get()
+            .collection(this.GAMES_COLLECTION)
+            .findOne({ gamepin: { $in: [gamepin] } });
+
+        if (gamestate) {
+            const participantState = gamestate.participants.filter(p => (p.uuid = uuid));
+
+            if (participantState) {
+                return [participantState];
+            }
+        }
+
+        return [];
     };
 
     // GAME  STATE
@@ -46,15 +65,24 @@ class DatabaseService {
                 }
             );
     }
-    async getGamestate(gamepin) {
+
+    async getGamestate(gamepin, cb) {
         return await db
             .get()
             .collection(this.GAMES_COLLECTION)
-            .find({ gamepin: parseInt(gamepin) });
+            .findOne({ gamepin: gamepin });
     }
 
-    async updateGamestate(participantData) {
-        db.get().collection(this.GAMES_COLLECTION);
+    async updateGamestate(gamestate) {
+        const updatedGameState = await db
+            .get()
+            .collection(this.GAMES_COLLECTION)
+            .updateOne(
+                { gamepin: gamestate.gamepin },
+                { $set: { participants: gamestate.participants } }
+            );
+
+        return updatedGameState;
     }
 
     // PARTICIPANTS

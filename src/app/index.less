@@ -18,6 +18,29 @@ html {
   margin: 0;
 }
 
+button {
+  font-family: "Press Start 2P", sans-serif;
+  appearance: none;
+  background-color: #3a9364;
+  color: white;
+  font-size: 12px;
+  padding: 10px 15px;
+  box-shadow: none;
+  border: none;
+  cursor: pointer;
+
+  &:focus {
+    border: none;
+    box-shadow: none;
+    outline: none;
+  }
+
+  &:hover {
+    opacity: 0.8;
+  }
+}
+
 @import "./components/StartScreen/startscreen.less";
+@import "./components/WaitingScreen/waitingscreen.less";
 @import "./components/Game/game.less";
 @import "./components/Winners/winners.less";
