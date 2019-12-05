@@ -130,23 +130,6 @@ const setupRouter = (middleware, io, adminSocket, participantSocket) => {
         res.status(200).json(toggledWinner);
     });
 
-    router.get('/games/:game', (req, res) => {
-        res.status(200).send(
-            fs.readFileSync(path.join(__dirname, `./assets/games/${req.params.game}.html`), 'UTF-8')
-        );
-    });
-
-    router.get('/ressurshjelp/:game', (req, res) => {
-        res.status(200).send(
-            fs.readFileSync(path.join(__dirname, `./assets/games/${req.params.game}.json`), 'UTF-8')
-        );
-    });
-
-    // Games
-    router.get('/games', (req, res) => {
-        res.status(200).send(gamesConfig);
-    });
-
     if (process.env.NODE_ENV === 'development') {
         router.get('*', (req, res) => {
             res.writeHead(200, { 'Content-Type': 'text/html' });
