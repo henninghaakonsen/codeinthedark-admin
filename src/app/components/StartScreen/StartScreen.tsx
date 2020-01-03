@@ -1,10 +1,21 @@
+// tslint:disable-next-line: no-var-requires
+const sanityClient = require('@sanity/client');
+
 import axios, { AxiosResponse } from 'axios';
 import * as React from 'react';
 import { useHistory } from 'react-router-dom';
 
+const client = sanityClient({
+    dataset: 'production',
+    projectId: 'an0jzjry',
+    useCdn: true,
+});
+
 interface IGame {
-    displayName: string;
+    name: string;
     id: string;
+    level: string;
+    result_html: string;
 }
 
 const StartScreen: React.FunctionComponent = () => {
@@ -13,13 +24,13 @@ const StartScreen: React.FunctionComponent = () => {
     const [chosenIndex, setChosenIndex] = React.useState(0);
 
     React.useEffect(() => {
-        axios
-            .get('/games')
-            .then((response: AxiosResponse<{ gamesConfig: IGame[] }>) => {
-                setGames(response.data.gamesConfig);
+        client
+            .fetch('*[_type == "game"]')
+            .then((fetchedContent: IGame[]) => {
+                setGames(fetchedContent);
             })
-            .catch((error: any) => {
-                alert(error);
+            .catch((error: Error) => {
+                alert(error.message);
             });
     }, []);
 
@@ -44,7 +55,7 @@ const StartScreen: React.FunctionComponent = () => {
                         <div className={'startscreen__konfigurasjon--carousel-iframecontainer'}>
                             <iframe
                                 key={games[chosenIndex].id}
-                                src={`/games/${games[chosenIndex].id}`}
+                                srcDoc={games[chosenIndex].result_html}
                             />
                         </div>
                     )}
