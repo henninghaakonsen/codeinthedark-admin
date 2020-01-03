@@ -11,13 +11,12 @@ const db = require('./database/db');
 const config = require('../webpack.dev'),
     webpack = require('webpack'),
     router = require('./router'),
+    setupParticipantRoutes = require('./routes/participants'),
     socket = require('./socket'),
     webpackDevMiddleware = require('webpack-dev-middleware'),
     webpackHotMiddleware = require('webpack-hot-middleware');
 
 const port = process.env.PORT || 9000;
-
-const participants = require('./routes/participants');
 
 const app = express();
 app.use(bodyParser.json());
@@ -57,7 +56,7 @@ const server = http.createServer(app);
 let io = socketIo(server);
 const [adminSocket, participantSocket] = socket.setupSocket(io);
 
-app.use('/participant', participants);
+app.use('/participant', setupParticipantRoutes(adminSocket));
 app.use('/', router.setupRouter(middleware, io, adminSocket, participantSocket));
 
 db.connect(() => {

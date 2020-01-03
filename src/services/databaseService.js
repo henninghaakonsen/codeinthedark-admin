@@ -1,5 +1,3 @@
-const assert = require('assert');
-
 const db = require('../database/db');
 
 class DatabaseService {

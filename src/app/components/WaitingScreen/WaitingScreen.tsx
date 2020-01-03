@@ -9,11 +9,12 @@ interface IProps {
 
 const WaitingScreen: React.FunctionComponent<IProps> = ({ gamestate }) => {
     const history = useHistory();
+
     return (
         <div className={'waitingscreen'}>
             <h1>{`Gamepin: ${gamestate.gamepin}`}</h1>
             <div className={'waitingscreen__participants'}>
-                {gamestate.participants.map((participant: IParticipant) => {
+                {Object.values(gamestate.participants).map((participant: IParticipant) => {
                     return (
                         <div key={participant.name} className={'waitingscreen__participants--chip'}>
                             {participant.name}

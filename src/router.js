@@ -1,8 +1,6 @@
 const DatabaseService = require('./services/databaseService');
 const express = require('express'),
     path = require('path'),
-    fs = require('fs'),
-    gamesConfig = require('./assets/gamesConfig'),
     router = express.Router();
 
 /**

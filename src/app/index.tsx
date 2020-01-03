@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { render } from 'react-dom';
-import { BrowserRouter as Router, Route, Switch, useHistory } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Switch } from 'react-router-dom';
 import Game from './components/Game/Game';
 import useGamestate from './components/Services/useGamestate';
 import SocketProvider from './components/SocketProvider/SocketProvider';
