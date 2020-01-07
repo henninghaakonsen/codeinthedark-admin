@@ -18,24 +18,29 @@ const removeAdmin = clientId => {
     console.log('Admins after unregister: ', admins);
 };
 
-const addParticipant = (clientId, gamepin) => {
+const addParticipant = (clientId, clientUuid, gamepin) => {
     if (participants[gamepin] === undefined) {
         participants[gamepin] = [];
     }
 
-    if (!participants[gamepin].find(client => client.id === clientId)) {
+    if (!participants[gamepin].find(client => client.uuid === clientUuid)) {
         participants[gamepin].push({
             id: clientId,
+            uuid: clientUuid,
         });
     }
     console.log('Participants after register: ', participants[gamepin]);
 };
 
-const removeParticipant = (clientId, gamepin) => {
+const removeParticipant = (clientUuid, gamepin) => {
     if (participants[gamepin] === undefined) {
-        console.log(`Game PIN '${gamepin}' does not exist. Could not remove client '${clientId}'`);
+        console.log(
+            `Game PIN '${gamepin}' does not exist. Could not remove client '${clientUuid}'`
+        );
     } else {
-        const updatedParticipants = participants[gamepin].filter(client => client.id !== clientId);
+        const updatedParticipants = participants[gamepin].filter(
+            client => client.uuid !== clientUuid
+        );
         participants[gamepin] = updatedParticipants;
         console.log('Participants after unregister: ', participants[gamepin]);
     }
@@ -61,17 +66,22 @@ const setupSocket = io => {
         });
     });
 
-    participantSocket.on('connection', client => {
-        console.log(client.id);
+    participantSocket.on('connection', async client => {
         const gamepin = client.handshake.query.gamepin;
-        addParticipant(client.id, gamepin);
+        const uuid = client.handshake.query.uuid;
+        addParticipant(client.id, uuid, gamepin);
 
-        //participantSocket.connected[client.id].emit('gamestate', cache.getGameState(gamepin));
+        console.log(participantSocket.connected[client.id]);
+
+        participantSocket.connected[client.id].emit(
+            `gamestate`,
+            await databaseService.getParticipant(uuid)
+        );
 
         client.on('disconnect', () => {
-            console.log(`participant disconnected => clientID: ${client.id}`);
+            console.log(`participant disconnected => uuid: ${uuid}`);
 
-            removeParticipant(client.id, gamepin);
+            removeParticipant(uuid, gamepin);
         });
     });
 
@@ -79,3 +89,4 @@ const setupSocket = io => {
 };
 
 exports.setupSocket = setupSocket;
+exports.participants = participants;

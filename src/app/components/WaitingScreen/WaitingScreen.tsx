@@ -39,9 +39,13 @@ const WaitingScreen: React.FunctionComponent<IProps> = ({ gamestate }) => {
                 </button>
                 <button
                     onClick={() => {
-                        axios.put(`/game/${gamestate.gamepin}/update-state`, {
-                            gamestatus: tournamentStates.IN_PROGRESS,
-                        });
+                        axios
+                            .put(`/game/${gamestate.gamepin}/update-state`, {
+                                gamestatus: tournamentStates.IN_PROGRESS,
+                            })
+                            .then((response: AxiosResponse) => {
+                                history.push(`/game/${gamestate.gamepin}`);
+                            });
                     }}
                 >
                     Start

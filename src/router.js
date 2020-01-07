@@ -1,3 +1,4 @@
+const { participants } = require('./socket');
 const DatabaseService = require('./services/databaseService');
 const express = require('express'),
     path = require('path'),
@@ -85,6 +86,14 @@ const setupRouter = (middleware, io, adminSocket, participantSocket) => {
 
         const gamestate = await databaseService.setGameState(gamestatus, gamepin);
         adminSocket.emit(`gamestate-${gamepin}`, gamestate.value);
+
+        Object.values(participants[gamepin]).map(participant => {
+            participantSocket.connected[participant.id].emit(
+                `gamestate`,
+                databaseService.getParticipant(participant.uuid)
+            );
+        });
+
         res.status(200);
     });
 
