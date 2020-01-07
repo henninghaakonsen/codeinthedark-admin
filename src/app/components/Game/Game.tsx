@@ -49,7 +49,7 @@ const Game: React.StatelessComponent<IProps> = ({ gamestate }) => {
                 )}
             </div>
             <div className={'previews'}>
-                {gamestate.participants.map((participantData: IParticipant) => {
+                {Object.values(gamestate.participants).map((participantData: IParticipant) => {
                     const body = participantData.content.replace(/(\r\n|\n|\r)/gm, '');
 
                     return (
@@ -57,7 +57,7 @@ const Game: React.StatelessComponent<IProps> = ({ gamestate }) => {
                             key={participantData.uuid}
                             html={body}
                             participantData={participantData}
-                            numberOfParticipants={gamestate.participants.length}
+                            numberOfParticipants={Object.values(gamestate.participants).length}
                             tournamentState={gamestate.status}
                         />
                     );

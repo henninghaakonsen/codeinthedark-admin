@@ -48,18 +48,20 @@ class DatabaseService {
 
     // GAME  STATE
     async setGameState(status, gamepin) {
+        console.log('Status', status, 'Gamepin', gamepin);
         return await db
             .get()
             .collection(this.GAMES_COLLECTION)
             .findOneAndUpdate(
-                { gamepin: parseInt(gamepin) },
+                { gamepin: gamepin },
                 {
                     $set: {
                         status: status,
                     },
                 },
                 {
-                    returnOriginal: false,
+                    // returnOriginal: false,
+                    returnNewDocument: true,
                 }
             );
     }
@@ -90,14 +92,16 @@ class DatabaseService {
         return await db.get().collection(this.GAMES_COLLECTION);
     }
 
-    async getParticipant(uuid) {
-        const participant = await db
+    async getParticipant(gamepin, uuid) {
+        const game = await db
             .get()
             .collection(this.GAMES_COLLECTION)
-            .find({ uuid })
-            .toArray();
-
-        return participant;
+            .findOne({ gamepin });
+        const participantState = {
+            ...game.participants[uuid],
+            status: game.status,
+        };
+        return participantState;
     }
 
     // WINNERS

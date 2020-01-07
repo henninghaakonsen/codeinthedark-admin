@@ -67,15 +67,15 @@ const setupSocket = io => {
     });
 
     participantSocket.on('connection', async client => {
+        console.log('Client', client);
         const gamepin = client.handshake.query.gamepin;
         const uuid = client.handshake.query.uuid;
         addParticipant(client.id, uuid, gamepin);
-
-        console.log(participantSocket.connected[client.id]);
+        console.log('Gamepin on connection', gamepin);
 
         participantSocket.connected[client.id].emit(
             `gamestate`,
-            await databaseService.getParticipant(uuid)
+            await databaseService.getParticipant(gamepin, uuid)
         );
 
         client.on('disconnect', () => {

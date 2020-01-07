@@ -12,7 +12,9 @@ export interface IGamestate {
     status: tournamentStates;
     endTime: string;
     startTime: string;
-    participants: IParticipant[];
+    participants: {
+        [uuid: string]: IParticipant;
+    };
 }
 
 export interface IParticipant {
