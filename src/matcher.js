@@ -4,6 +4,8 @@ const pixelmatch = require('pixelmatch');
 const fs = require('fs');
 
 const options = {
+    waitAfterSelector: 'html',
+    waitMilliseconds: 1500,
     width: 1400,
     height: 1400,
 };
@@ -24,7 +26,7 @@ exports.getMatchRate = (content, uuid, resultUrl) => {
     const diff = new PNG({ width, height });
 
     const numDiffPixels = pixelmatch(img1.data, img2.data, diff.data, img1.width, img2.height, {
-        threshold: 0.1,
+        threshold: 0,
     });
     fs.writeFileSync('diff.png', PNG.sync.write(diff));
 

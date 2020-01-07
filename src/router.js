@@ -2,10 +2,17 @@ const express = require('express'),
     path = require('path'),
     fs = require('fs'),
     matcher = require('./matcher'),
-    router = express.Router();
+    router = express.Router(),
+    sanityClient = require('@sanity/client');
 
 const { participants } = require('./socket');
 const DatabaseService = require('./services/databaseService');
+
+const client = sanityClient({
+    dataset: 'production',
+    projectId: 'an0jzjry',
+    useCdn: true,
+});
 
 /**
  * gamestate: status, gameEnd
@@ -26,35 +33,51 @@ const setupRouter = (middleware, io, adminSocket, participantSocket) => {
         res.end();
     });
 
-    router.get('/game/:gamepin/matcher', async (req, res) => {
+    router.get('/games/:gamepin/matcher', async (req, res) => {
         const gamepin = req.params.gamepin;
-        const gamestate = await databaseService.getGamestate(gamepin);
+        console.log(
+            'Likhet: ',
+            matcher.getMatchRate(
+                //`http://localhost:9000/participant/${participant.uuid}`,
+                'http://localhost:9000/games/ping-trd-2019',
+                '1234', // participant.uuid,
+                'http://localhost:9000/games/ping-trd-2019'
+            )
+        );
+        /*const gamestate = await databaseService.getGamestate(gamepin);
 
         Object.values(gamestate.participants).map(participant => {
             console.log(
                 'Likhet: ',
                 matcher.getMatchRate(
-                    `http://localhost:9000/participant/${participant.uuid}`,
-                    participant.uuid,
-                    'http://localhost:9000/fagdag-okt-19/puljer'
+                    //`http://localhost:9000/participant/${participant.uuid}`,
+                    'http://localhost:9000/games/ping-trd-2019',
+                    '1234', // participant.uuid,
+                    'http://localhost:9000/games/ping-trd-2019'
                 ),
                 '%'
             );
-        });
+        });*/
 
         res.status(200).send();
     });
 
     router.get('/games/:gameid', (req, res) => {
         client
-            .fetch('*[_type == "game" && ]')
-            .then((fetchedContent: IGame) => {
-                setGames(fetchedContent);
+            .fetch(`*[_type == "game" && id == "${req.params.gameid}"]`)
+            .then(fetchedContent => {
+                if (fetchedContent.length === 0 || fetchedContent.length > 1) {
+                    res.status(400).json({ message: 'Fant 0 eller flere spill med id' });
+                } else {
+                    res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+                    res.write(fetchedContent[0].result_html);
+                    res.end();
+                }
             })
-            .catch((error: Error) => {
-                alert(error.message);
+            .catch(error => {
+                res.status(500).json(error);
             });
-    })
+    });
 
     router.post('/games/create-game', async (req, res) => {
         await databaseService.createGame(req.body.gameId, game => {
