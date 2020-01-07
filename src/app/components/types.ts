@@ -1,4 +1,23 @@
-export interface IParticipantData {
+export enum tournamentStates {
+    CANCELLED = 'CANCELLED',
+    FINISHED = 'FINISHED',
+    IN_PROGRESS = 'IN_PROGRESS',
+    NOT_STARTED = 'NOT_STARTED',
+}
+
+export interface IGamestate {
+    created: string;
+    gameId: string;
+    gamepin: string;
+    status: tournamentStates;
+    endTime: string;
+    startTime: string;
+    participants: {
+        [uuid: string]: IParticipant;
+    };
+}
+
+export interface IParticipant {
     animate: boolean;
     animationKey: number;
     content: string;
@@ -10,5 +29,5 @@ export interface IParticipantData {
 }
 
 export interface IKeyPair {
-    [key: string]: IParticipantData;
+    [key: string]: IParticipant;
 }

@@ -3,9 +3,14 @@
     src: url("/assets/PressStart2P-Regular.ttf") format('truetype');
 }
 
+@font-face {
+  font-family: 'Chicken Dinner';
+  src: url("/assets/Chicken Dinner Demo.otf") format('truetype');
+}
+
 body,
 html {
-  font-family: 'Press Start 2P', sans-serif;
+  //font-family: 'Chicken Dinner', sans-serif;
   width: 100%;
   height: 100%;
   overflow: hidden;
@@ -13,5 +18,29 @@ html {
   margin: 0;
 }
 
-@import "./components/app.less";
+button {
+  font-family: "Press Start 2P", sans-serif;
+  appearance: none;
+  background-color: #3a9364;
+  color: white;
+  font-size: 12px;
+  padding: 10px 15px;
+  box-shadow: none;
+  border: none;
+  cursor: pointer;
+
+  &:focus {
+    border: none;
+    box-shadow: none;
+    outline: none;
+  }
+
+  &:hover {
+    opacity: 0.8;
+  }
+}
+
+@import "./components/StartScreen/startscreen.less";
+@import "./components/WaitingScreen/waitingscreen.less";
+@import "./components/Game/game.less";
 @import "./components/Winners/winners.less";
