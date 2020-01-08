@@ -48,7 +48,6 @@ class DatabaseService {
 
     // GAME  STATE
     async setGameState(status, gamepin) {
-        console.log('Status', status, 'Gamepin', gamepin);
         return await db
             .get()
             .collection(this.GAMES_COLLECTION)
@@ -60,8 +59,7 @@ class DatabaseService {
                     },
                 },
                 {
-                    // returnOriginal: false,
-                    returnNewDocument: true,
+                    returnOriginal: false,
                 }
             );
     }
@@ -101,6 +99,7 @@ class DatabaseService {
             ...game.participants[uuid],
             status: game.status,
         };
+
         return participantState;
     }
 

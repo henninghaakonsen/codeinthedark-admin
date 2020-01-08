@@ -10,8 +10,11 @@ interface IProps {
 }
 
 const Game: React.StatelessComponent<IProps> = ({ gamestate }) => {
-    const resetTournament = () => {
-        axios.delete('/participant-data');
+    console.log(gamestate);
+    const stopTournament = () => {
+        axios.put(`/game/${gamestate.gamepin}/update-state`, {
+            gamestatus: 'FINISHED',
+        });
     };
 
     return (
@@ -29,23 +32,10 @@ const Game: React.StatelessComponent<IProps> = ({ gamestate }) => {
                     <div
                         className={'game__settings--button'}
                         onClick={() => {
-                            resetTournament();
+                            stopTournament();
                         }}
-                        children={'Reset'}
+                        children={'Finish'}
                     />
-                )}
-
-                {gamestate.status === tournamentStates.FINISHED && (
-                    <>
-                        <div className={'game__settings--stop'}>STOP!</div>
-                        <div
-                            className={'game__settings--button'}
-                            onClick={() => {
-                                resetTournament();
-                            }}
-                            children={'Reset'}
-                        />
-                    </>
                 )}
             </div>
             <div className={'previews'}>
