@@ -24,14 +24,20 @@ const setupRouter = (middleware, io, adminSocket, participantSocket) => {
 
     router.post('/participant-data', (req, res) => {
         const body = req.body;
+        console.log(body);
 
         // cache.updateCache({
         //     ...cache.getCache(),
         //     [body.uuid]: body,
         // });
+
+        // TODO Oppdater gamestate i db
+        databaseService.updateGamestate(body);
+
         res.status(200).send();
 
         io.emit('participant-data', body);
+        // Emit til admin-socket med oppdatert data
     });
 
     router.put('/game/:gamepin/update-state', async (req, res) => {
@@ -52,23 +58,24 @@ const setupRouter = (middleware, io, adminSocket, participantSocket) => {
         res.status(200).send();
     });
 
-    // router.get('/participant-data', (req, res) => {
-    //     res.status(200).send(cache);
-    // });
-
     router.delete('/participant-data', (req, res) => {
-        // cache.updateCache({});
-        // cache.setGameState();
+        // TODO Slett fra databasen
 
         res.status(200).send();
+
+        // TODO Emit status og reset
         // io.emit('status', cache.getGameState());
         // io.emit('reset', cache.getCache());
     });
 
     router.delete('/participant-data/:uuid', (req, res) => {
+        // TODO Slett participant data i db
+
         // cache.deleteElement(req.params.uuid);
 
         res.status(200).send();
+        // TODO Emit participants-data fra db
+
         // io.emit('participants-data', cache.getCache());
     });
 
@@ -78,6 +85,8 @@ const setupRouter = (middleware, io, adminSocket, participantSocket) => {
         databaseService.updateWinners(body);
 
         res.status(200).send();
+        // TODO Emit vinnere fra databasen
+
         // io.emit('participants-winners', cache.getWinners());
     });
 
