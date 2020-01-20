@@ -1,14 +1,12 @@
 const express = require('express');
-const DatabaseService = require('../services/databaseService');
-const service = new DatabaseService();
 const participants = express.Router();
 
-const setupParticipantRoutes = adminSocket => {
+const setupParticipantRoutes = (adminSocket, databaseService) => {
     participants.post('/create', async (req, res) => {
         const {
             body: { uuid, gamepin, name },
         } = req;
-        let gamestate = await service.getGamestate(gamepin);
+        let gamestate = await databaseService.getGamestate(gamepin);
 
         if (gamestate) {
             const newParticipant = {
@@ -30,8 +28,8 @@ const setupParticipantRoutes = adminSocket => {
                 [uuid]: newParticipant,
             };
 
-            await service.updateGamestate(gamestate);
-            const updatedGamestate = await service.getGamestate(gamepin);
+            await databaseService.updateGamestate(gamestate);
+            const updatedGamestate = await databaseService.getGamestate(gamepin);
 
             console.log('updatedGamestate: ', updatedGamestate);
             adminSocket.emit(`gamestate-${gamepin}`, updatedGamestate);

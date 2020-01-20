@@ -10,7 +10,6 @@ interface IProps {
 }
 
 const Game: React.StatelessComponent<IProps> = ({ gamestate }) => {
-    console.log(gamestate);
     const stopTournament = () => {
         axios.put(`/game/${gamestate.gamepin}/update-state`, {
             gamestatus: 'FINISHED',
