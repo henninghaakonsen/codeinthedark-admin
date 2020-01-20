@@ -12,6 +12,7 @@ const config = require('../webpack.dev'),
     webpack = require('webpack'),
     router = require('./router'),
     setupParticipantRoutes = require('./routes/participants'),
+    DatabaseService = require('./services/databaseService'),
     socket = require('./socket'),
     webpackDevMiddleware = require('webpack-dev-middleware'),
     webpackHotMiddleware = require('webpack-hot-middleware');
@@ -53,10 +54,11 @@ if (process.env.NODE_ENV === 'development') {
 app.use('/assets', express.static(path.join(__dirname, '..', 'public')));
 
 const server = http.createServer(app);
+const databaseService = new DatabaseService();
 let io = socketIo(server);
-const [adminSocket, participantSocket] = socket.setupSocket(io);
+const [adminSocket, participantSocket] = socket.setupSocket(io, databaseService);
 
-app.use('/participant', setupParticipantRoutes(adminSocket));
+app.use('/participant', setupParticipantRoutes(adminSocket, databaseService));
 app.use('/', router.setupRouter(middleware, io, adminSocket, participantSocket));
 
 db.connect(() => {

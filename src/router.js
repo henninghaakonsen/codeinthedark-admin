@@ -1,7 +1,8 @@
-const { participants } = require('./socket');
 const DatabaseService = require('./services/databaseService');
 const express = require('express'),
+    nodeCron = require('node-cron'),
     path = require('path'),
+    moment = require('moment'),
     router = express.Router();
 
 /**
@@ -10,6 +11,7 @@ const express = require('express'),
 const statuses = {
     IN_PROGRESS: 'IN_PROGRESS',
     WAITING: 'WAITING',
+    FINISHED: 'FINISHED',
 };
 
 const setupRouter = (middleware, io, adminSocket, participantSocket) => {
@@ -44,23 +46,38 @@ const setupRouter = (middleware, io, adminSocket, participantSocket) => {
         const { gamepin } = req.params;
         const { gamestatus } = req.body;
 
-        const gamestate = await databaseService.setGameState(gamestatus, gamepin);
-        console.log('Participants', participants);
-        adminSocket.emit(`gamestate-${gamepin}`, gamestate.value);
+        const gamestate = await databaseService.setGameStateAndUpdateClients(
+            gamestatus,
+            gamepin,
+            adminSocket,
+            participantSocket
+        );
 
-        const emitParticipants = participants[gamepin];
-        if (emitParticipants) {
-            Object.values(emitParticipants).map(async participant => {
-                const participantData = await databaseService.getParticipant(
+        if (gamestatus === statuses.IN_PROGRESS) {
+            const cron = nodeCron.schedule(dateToCron(gamestate.value.endTime), async () => {
+                await databaseService.setGameStateAndUpdateClients(
+                    statuses.FINISHED,
                     gamepin,
-                    participant.uuid
+                    adminSocket,
+                    participantSocket
                 );
-                participantSocket.connected[participant.id].emit(`gamestate`, participantData);
             });
+
+            setTimeout(() => {
+                cron.destroy();
+            }, (15 + 5) * 60 * 1000);
         }
 
         res.status(200).send();
     });
+
+    const dateToCron = date => {
+        return moment(date).format('S m H D M d');
+    };
+
+    // router.get('/participant-data', (req, res) => {
+    //     res.status(200).send(cache);
+    // });
 
     router.delete('/participant-data', (req, res) => {
         // TODO Slett fra databasen

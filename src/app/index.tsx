@@ -43,6 +43,8 @@ const GameStates: React.StatelessComponent<IProps> = ({ gamepin }) => {
                 return <WaitingScreen gamestate={gamestate} />;
             case tournamentStates.IN_PROGRESS:
                 return <Game gamestate={gamestate} />;
+            case tournamentStates.FINISHED:
+                return <div style={{ color: 'white' }}>FINISHED!</div>;
             default:
                 return <div />;
         }

@@ -1,5 +1,3 @@
-const DatabaseService = require('./services/databaseService');
-
 let admins = [];
 let participants = {};
 
@@ -46,8 +44,7 @@ const removeParticipant = (clientUuid, gamepin) => {
     }
 };
 
-const setupSocket = io => {
-    const databaseService = new DatabaseService();
+const setupSocket = (io, databaseService) => {
     const adminSocket = io.of('/admin');
     const participantSocket = io.of('/participant');
 
