@@ -1,7 +1,8 @@
-const { participants } = require('./socket');
 const DatabaseService = require('./services/databaseService');
 const express = require('express'),
+    nodeCron = require('node-cron'),
     path = require('path'),
+    moment = require('moment'),
     router = express.Router();
 
 /**
@@ -10,6 +11,7 @@ const express = require('express'),
 const statuses = {
     IN_PROGRESS: 'IN_PROGRESS',
     WAITING: 'WAITING',
+    FINISHED: 'FINISHED',
 };
 
 const setupRouter = (middleware, io, adminSocket, participantSocket) => {
@@ -38,19 +40,34 @@ const setupRouter = (middleware, io, adminSocket, participantSocket) => {
         const { gamepin } = req.params;
         const { gamestatus } = req.body;
 
-        const gamestate = await databaseService.setGameState(gamestatus, gamepin);
-        console.log('Participants', participants);
-        adminSocket.emit(`gamestate-${gamepin}`, gamestate.value);
+        const gamestate = await databaseService.setGameStateAndUpdateClients(
+            gamestatus,
+            gamepin,
+            adminSocket,
+            participantSocket
+        );
 
-        Object.values(participants[gamepin]).map(participant => {
-            participantSocket.connected[participant.id].emit(
-                `gamestate`,
-                databaseService.getParticipant(gamepin, participant.uuid)
-            );
-        });
+        if (gamestatus === statuses.IN_PROGRESS) {
+            const cron = nodeCron.schedule(dateToCron(gamestate.value.endTime), async () => {
+                await databaseService.setGameStateAndUpdateClients(
+                    statuses.FINISHED,
+                    gamepin,
+                    adminSocket,
+                    participantSocket
+                );
+            });
+
+            setTimeout(() => {
+                cron.destroy();
+            }, (15 + 5) * 60 * 1000);
+        }
 
         res.status(200).send();
     });
+
+    const dateToCron = date => {
+        return moment(date).format('S m H D M d');
+    };
 
     // router.get('/participant-data', (req, res) => {
     //     res.status(200).send(cache);

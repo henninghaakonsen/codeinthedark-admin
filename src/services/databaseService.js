@@ -1,4 +1,6 @@
+const participants = require('../socket');
 const db = require('../database/db');
+const moment = require('moment');
 
 class DatabaseService {
     GAMES_COLLECTION = 'games';
@@ -12,7 +14,7 @@ class DatabaseService {
             .collection(this.GAMES_COLLECTION)
             .insertOne(
                 {
-                    created: new Date().toISOString(),
+                    created: new Date().toUTCString(),
                     gameId,
                     gamepin,
                     status: 'NOT_STARTED',
@@ -46,22 +48,51 @@ class DatabaseService {
         return [];
     };
 
+    async setGameStateAndUpdateClients(gamestatus, gamepin, adminSocket, participantSocket) {
+        const gamestate = await this.setGameState(gamestatus, gamepin);
+        adminSocket.emit(`gamestate-${gamepin}`, gamestate.value);
+
+        const emitParticipants = participants[gamepin];
+        if (emitParticipants) {
+            Object.values(emitParticipants).map(async participant => {
+                const participantData = await this.getParticipant(gamepin, participant.uuid);
+
+                participantSocket.connected[participant.id].emit(`gamestate`, participantData);
+            });
+        }
+
+        return gamestate;
+    }
+
     // GAME  STATE
     async setGameState(status, gamepin) {
-        console.log('Status', status, 'Gamepin', gamepin);
+        const updatedGameState = {
+            status,
+            startTime:
+                status === 'IN_PROGRESS'
+                    ? moment()
+                          .utc()
+                          .toISOString()
+                    : undefined,
+            endTime:
+                status === 'IN_PROGRESS'
+                    ? moment()
+                          .add(0.5, 'minutes')
+                          .utc()
+                          .toISOString()
+                    : undefined,
+        };
+
         return await db
             .get()
             .collection(this.GAMES_COLLECTION)
             .findOneAndUpdate(
                 { gamepin: gamepin },
                 {
-                    $set: {
-                        status: status,
-                    },
+                    $set: updatedGameState,
                 },
                 {
-                    // returnOriginal: false,
-                    returnNewDocument: true,
+                    returnOriginal: false,
                 }
             );
     }
@@ -100,7 +131,10 @@ class DatabaseService {
         const participantState = {
             ...game.participants[uuid],
             status: game.status,
+            startTime: game.startTime,
+            endTime: game.endTime,
         };
+
         return participantState;
     }
 
