@@ -13,22 +13,13 @@ const setupRouter = (middleware, io, adminSocket, participantSocket, databaseSer
         });
     });
 
-    router.post('/participant-data', (req, res) => {
+    router.post('/participant-data', async (req, res) => {
         const body = req.body;
 
-        // cache.updateCache({
-        //     ...cache.getCache(),
-        //     [body.uuid]: body,
-        // });
-
-        // TODO Oppdater gamestate i db
-        // console.log('Body som skal oppdateres', body);
-        // databaseService.updateGamestate(body);
+        const updatedGamestate = await databaseService.updateContentForParticipant(body);
+        adminSocket.emit(`gamestate-${body.gamepin}`, updatedGamestate);
 
         res.status(200).send();
-
-        io.emit('participant-data', body);
-        // Emit til admin-socket med oppdatert data
     });
 
     router.put('/game/:gamepin/update-state', async (req, res) => {

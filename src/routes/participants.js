@@ -31,7 +31,6 @@ const setupParticipantRoutes = (adminSocket, databaseService) => {
                 },
             });
 
-            console.log('updatedGamestate: ', updatedGamestate);
             adminSocket.emit(`gamestate-${gamepin}`, updatedGamestate);
             res.status(200).json(newParticipant);
         } else {

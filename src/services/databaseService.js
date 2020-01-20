@@ -105,8 +105,23 @@ class DatabaseService {
             .findOne({ gamepin: gamepin });
     }
 
+    async updateContentForParticipant(body) {
+        const { gamepin, content, uuid } = body;
+        const gamestate = await this.getGamestate(gamepin);
+
+        return this.updateGamestate({
+            ...gamestate,
+            participants: {
+                ...gamestate.participants,
+                [uuid]: {
+                    ...gamestate.participants[uuid],
+                    content,
+                },
+            },
+        });
+    }
+
     async updateGamestate(gamestate) {
-        console.log('Original gamestate', gamestate);
         const updatedGameState = await db
             .get()
             .collection(this.GAMES_COLLECTION)
@@ -118,7 +133,6 @@ class DatabaseService {
                 }
             );
 
-        console.log('Updated gamestate', updatedGameState);
         return updatedGameState.value;
     }
 
@@ -136,9 +150,10 @@ class DatabaseService {
             .findOne({ gamepin });
         const participantState = {
             ...game.participants[uuid],
-            status: game.status,
-            startTime: game.startTime,
             endTime: game.endTime,
+            gameId: game.gameId,
+            startTime: game.startTime,
+            status: game.status,
         };
 
         return participantState;
