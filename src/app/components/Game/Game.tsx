@@ -3,13 +3,14 @@ import * as moment from 'moment';
 import 'moment-duration-format';
 import * as React from 'react';
 import Preview from '../Preview/Preview';
-import { IGamestate, IParticipant, tournamentStates } from '../types';
+import { IGamestate, IParticipant, GameStates } from '../types';
 
 interface IProps {
     gamestate: IGamestate;
 }
 
 const Game: React.StatelessComponent<IProps> = ({ gamestate }) => {
+    console.log(gamestate);
     const stopTournament = () => {
         axios.put(`/game/${gamestate.gamepin}/update-state`, {
             gamestatus: 'FINISHED',
@@ -21,13 +22,13 @@ const Game: React.StatelessComponent<IProps> = ({ gamestate }) => {
             <div className={'game__settings'}>
                 <div className={'game__settings--tittel'}>Code in the Dark</div>
                 <div style={{ flex: 1 }} />
-                {gamestate.status === tournamentStates.IN_PROGRESS && 0 !== 0 && (
+                {gamestate.status === GameStates.IN_PROGRESS && 0 !== 0 && (
                     <div className={'game__settings--countdown'}>
                         {moment.duration('', 'seconds').format('mm:ss')}
                     </div>
                 )}
 
-                {gamestate.status === tournamentStates.IN_PROGRESS && (
+                {gamestate.status === GameStates.IN_PROGRESS && (
                     <div
                         className={'game__settings--button'}
                         onClick={() => {

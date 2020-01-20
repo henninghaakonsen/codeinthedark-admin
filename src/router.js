@@ -1,22 +1,11 @@
-const DatabaseService = require('./services/databaseService');
 const express = require('express'),
     nodeCron = require('node-cron'),
     path = require('path'),
     moment = require('moment'),
-    router = express.Router();
+    router = express.Router(),
+    GameStates = require('./types').GameStates;
 
-/**
- * gamestate: status, gameEnd
- */
-const statuses = {
-    IN_PROGRESS: 'IN_PROGRESS',
-    WAITING: 'WAITING',
-    FINISHED: 'FINISHED',
-};
-
-const setupRouter = (middleware, io, adminSocket, participantSocket) => {
-    const databaseService = new DatabaseService();
-
+const setupRouter = (middleware, io, adminSocket, participantSocket, databaseService) => {
     router.post('/games/create-game', async (req, res) => {
         await databaseService.createGame(req.body.gameId, game => {
             res.status(200).json(game);
@@ -26,7 +15,6 @@ const setupRouter = (middleware, io, adminSocket, participantSocket) => {
 
     router.post('/participant-data', (req, res) => {
         const body = req.body;
-        console.log(body);
 
         // cache.updateCache({
         //     ...cache.getCache(),
@@ -34,7 +22,8 @@ const setupRouter = (middleware, io, adminSocket, participantSocket) => {
         // });
 
         // TODO Oppdater gamestate i db
-        databaseService.updateGamestate(body);
+        // console.log('Body som skal oppdateres', body);
+        // databaseService.updateGamestate(body);
 
         res.status(200).send();
 
@@ -53,10 +42,10 @@ const setupRouter = (middleware, io, adminSocket, participantSocket) => {
             participantSocket
         );
 
-        if (gamestatus === statuses.IN_PROGRESS) {
+        if (gamestatus === GameStates.IN_PROGRESS) {
             const cron = nodeCron.schedule(dateToCron(gamestate.value.endTime), async () => {
                 await databaseService.setGameStateAndUpdateClients(
-                    statuses.FINISHED,
+                    GameStates.FINISHED,
                     gamepin,
                     adminSocket,
                     participantSocket

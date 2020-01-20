@@ -1,30 +1,25 @@
 Arguments: 
-  /usr/local/Cellar/node/12.8.0/bin/node /usr/local/Cellar/yarn/1.17.3/libexec/bin/yarn.js add @types/sanity__client
+  /Users/sindremoldeklev/.nvm/versions/node/v12.13.1/bin/node /usr/local/Cellar/yarn/1.21.1/libexec/bin/yarn.js install
 
 PATH: 
-  /usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/munki:/Users/henninghakonsen/bekk/rn/flutter/bin:/Users/henninghakonsen/bekk/rn/flutter/bin
+  /Users/sindremoldeklev/.sdkman/candidates/maven/current/bin:/Users/sindremoldeklev/.sdkman/candidates/java/current/bin:/Users/sindremoldeklev/.nvm/versions/node/v12.13.1/bin:/Users/sindremoldeklev/bin:/usr/local/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin:/usr/local/munki:/opt/local/bin:/opt/local/sbin:/Users/sindremoldeklev/Documents/vegvesen/felles/tkselvbetjening-utilities/scripts:/Applications/SonarScanner/bin:/Applications/SonarQube/bin
 
 Yarn version: 
-  1.17.3
+  1.21.1
 
 Node version: 
-  12.8.0
+  12.13.1
 
 Platform: 
   darwin x64
 
 Trace: 
-  Error: https://registry.yarnpkg.com/@types%2fsanity__client: Not found
-      at Request.params.callback [as _callback] (/usr/local/Cellar/yarn/1.17.3/libexec/lib/cli.js:66830:18)
-      at Request.self.callback (/usr/local/Cellar/yarn/1.17.3/libexec/lib/cli.js:140464:22)
-      at Request.emit (events.js:203:13)
-      at Request.<anonymous> (/usr/local/Cellar/yarn/1.17.3/libexec/lib/cli.js:141436:10)
-      at Request.emit (events.js:203:13)
-      at IncomingMessage.<anonymous> (/usr/local/Cellar/yarn/1.17.3/libexec/lib/cli.js:141358:12)
-      at Object.onceWrapper (events.js:291:20)
-      at IncomingMessage.emit (events.js:208:15)
-      at endReadableNT (_stream_readable.js:1168:12)
-      at processTicksAndRejections (internal/process/task_queues.js:77:11)
+  SyntaxError: /Users/sindremoldeklev/Documents/dev/codeinthedark-admin/package.json: Unexpected token } in JSON at position 2729
+      at JSON.parse (<anonymous>)
+      at /usr/local/Cellar/yarn/1.21.1/libexec/lib/cli.js:1625:59
+      at Generator.next (<anonymous>)
+      at step (/usr/local/Cellar/yarn/1.21.1/libexec/lib/cli.js:310:30)
+      at /usr/local/Cellar/yarn/1.21.1/libexec/lib/cli.js:321:13
 
 npm manifest: 
   {
@@ -86,6 +81,7 @@ npm manifest:
           "moment-duration-format": "^2.3.2",
           "mongodb": "^3.3.4",
           "morgan": "^1.9.1",
+          "node-cron": "^2.0.3",
           "optimize-css-assets-webpack-plugin": "^5.0.3",
           "prettier": "^1.19.1",
           "react": "^16.12.0",
@@ -104,9 +100,7 @@ npm manifest:
           "webpack-hot-middleware": "^2.25.0",
           "webpack-merge": "^4.2.2"
       },
-      "engines": {
-          "yarn": "1.17.3"
-      }
+     
   }
 
 yarn manifest: 
@@ -4629,6 +4623,14 @@ Lockfile:
     dependencies:
       lower-case "^1.1.1"
   
+  node-cron@^2.0.3:
+    version "2.0.3"
+    resolved "https://registry.yarnpkg.com/node-cron/-/node-cron-2.0.3.tgz#b9649784d0d6c00758410eef22fa54a10e3f602d"
+    integrity sha512-eJI+QitXlwcgiZwNNSRbqsjeZMp5shyajMR81RZCqeW0ZDEj4zU9tpd4nTh/1JsBiKbF8d08FCewiipDmVIYjg==
+    dependencies:
+      opencollective-postinstall "^2.0.0"
+      tz-offset "0.0.1"
+  
   node-libs-browser@^2.2.1:
     version "2.2.1"
     resolved "https://registry.yarnpkg.com/node-libs-browser/-/node-libs-browser-2.2.1.tgz#b64f513d18338625f90346d27b0d235e631f6425"
@@ -4867,6 +4869,11 @@ Lockfile:
     integrity sha1-WDsap3WWHUsROsF9nFC6753Xa9E=
     dependencies:
       wrappy "1"
+  
+  opencollective-postinstall@^2.0.0:
+    version "2.0.2"
+    resolved "https://registry.yarnpkg.com/opencollective-postinstall/-/opencollective-postinstall-2.0.2.tgz#5657f1bede69b6e33a45939b061eb53d3c6c3a89"
+    integrity sha512-pVOEP16TrAO2/fjej1IdOyupJY8KDUM1CvsaScRbw6oddvpQoOfGk4ywha0HKKVAD6RkW4x6Q+tNBwhf3Bgpuw==
   
   optimize-css-assets-webpack-plugin@^5.0.3:
     version "5.0.3"
@@ -6816,6 +6823,11 @@ Lockfile:
     version "3.7.2"
     resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.7.2.tgz#27e489b95fa5909445e9fef5ee48d81697ad18fb"
     integrity sha512-ml7V7JfiN2Xwvcer+XAf2csGO1bPBdRbFCkYBczNZggrBZ9c7G3riSUeJmqEU5uOtXNPMhE3n+R4FA/3YOAWOQ==
+  
+  tz-offset@0.0.1:
+    version "0.0.1"
+    resolved "https://registry.yarnpkg.com/tz-offset/-/tz-offset-0.0.1.tgz#fef920257024d3583ed9072a767721a18bdb8a76"
+    integrity sha512-kMBmblijHJXyOpKzgDhKx9INYU4u4E1RPMB0HqmKSgWG8vEcf3exEfLh4FFfzd3xdQOw9EuIy/cP0akY6rHopQ==
   
   uglify-js@3.4.x:
     version "3.4.10"

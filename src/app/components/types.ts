@@ -1,15 +1,14 @@
-export enum tournamentStates {
-    CANCELLED = 'CANCELLED',
-    FINISHED = 'FINISHED',
+export enum GameStates {
+    CREATED = 'CREATED',
     IN_PROGRESS = 'IN_PROGRESS',
-    NOT_STARTED = 'NOT_STARTED',
+    FINISHED = 'FINISHED',
 }
 
 export interface IGamestate {
     created: string;
     gameId: string;
     gamepin: string;
-    status: tournamentStates;
+    status: GameStates;
     endTime: string;
     startTime: string;
     participants: {

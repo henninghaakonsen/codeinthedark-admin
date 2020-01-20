@@ -1,6 +1,7 @@
-const participants = require('../socket');
+const participants = require('../socket').participants;
 const db = require('../database/db');
 const moment = require('moment');
+const GameStates = require('../types').GameStates;
 
 class DatabaseService {
     GAMES_COLLECTION = 'games';
@@ -17,7 +18,7 @@ class DatabaseService {
                     created: new Date().toUTCString(),
                     gameId,
                     gamepin,
-                    status: 'NOT_STARTED',
+                    status: GameStates.CREATED,
                     endTime: undefined,
                     startTime: undefined,
                     participants: {},
@@ -77,7 +78,7 @@ class DatabaseService {
             endTime:
                 status === 'IN_PROGRESS'
                     ? moment()
-                          .add(0.5, 'minutes')
+                          .add(5, 'minutes')
                           .utc()
                           .toISOString()
                     : undefined,
@@ -105,15 +106,20 @@ class DatabaseService {
     }
 
     async updateGamestate(gamestate) {
+        console.log('Original gamestate', gamestate);
         const updatedGameState = await db
             .get()
             .collection(this.GAMES_COLLECTION)
-            .updateOne(
+            .findOneAndUpdate(
                 { gamepin: gamestate.gamepin },
-                { $set: { participants: gamestate.participants } }
+                { $set: { participants: gamestate.participants } },
+                {
+                    returnOriginal: false,
+                }
             );
 
-        return updatedGameState;
+        console.log('Updated gamestate', updatedGameState);
+        return updatedGameState.value;
     }
 
     // PARTICIPANTS
