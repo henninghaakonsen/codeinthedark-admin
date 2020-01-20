@@ -48,12 +48,16 @@ const setupRouter = (middleware, io, adminSocket, participantSocket) => {
         console.log('Participants', participants);
         adminSocket.emit(`gamestate-${gamepin}`, gamestate.value);
 
-        Object.values(participants[gamepin]).map(participant => {
-            participantSocket.connected[participant.id].emit(
-                `gamestate`,
-                databaseService.getParticipant(gamepin, participant.uuid)
-            );
-        });
+        const emitParticipants = participants[gamepin];
+        if (emitParticipants) {
+            Object.values(emitParticipants).map(async participant => {
+                const participantData = await databaseService.getParticipant(
+                    gamepin,
+                    participant.uuid
+                );
+                participantSocket.connected[participant.id].emit(`gamestate`, participantData);
+            });
+        }
 
         res.status(200).send();
     });

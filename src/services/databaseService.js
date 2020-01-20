@@ -59,7 +59,7 @@ class DatabaseService {
                     },
                 },
                 {
-                    returnNewDocument: true,
+                    returnOriginal: false,
                 }
             );
     }
@@ -98,6 +98,9 @@ class DatabaseService {
         const participantState = {
             ...game.participants[uuid],
             status: game.status,
+            endTime: game.endTime,
+            startTime: game.startTime,
+            gameId: game.gameId,
         };
         return participantState;
     }
