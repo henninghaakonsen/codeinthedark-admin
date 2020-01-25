@@ -14,6 +14,7 @@ const rootElement = document.getElementById('startscreen');
 const renderApp = (Component: React.ComponentType<{}>): void => {
     render(
         <SocketProvider>
+            <audio src={'/assets/soundtrack.mp3'} loop={true} autoPlay={true} />
             <Router>
                 <Switch>
                     <Route exact={true} path={'/'} component={Component} />
