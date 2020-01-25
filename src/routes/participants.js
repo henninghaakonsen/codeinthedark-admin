@@ -40,6 +40,15 @@ const setupParticipantRoutes = (adminSocket, databaseService) => {
         }
     });
 
+    participants.post('/html', async (req, res) => {
+        const body = req.body;
+
+        const updatedGamestate = await databaseService.updateContentForParticipant(body);
+        adminSocket.emit(`gamestate-${body.gamepin}`, updatedGamestate);
+
+        res.status(200).send();
+    });
+
     return participants;
 };
 

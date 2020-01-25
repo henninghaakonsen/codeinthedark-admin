@@ -1,4 +1,5 @@
 require('dotenv').config();
+
 const bodyParser = require('body-parser');
 const express = require('express');
 const path = require('path');
@@ -12,7 +13,7 @@ const config = require('../webpack.dev'),
     webpack = require('webpack'),
     router = require('./router'),
     setupParticipantRoutes = require('./routes/participants'),
-    DatabaseService = require('./services/databaseService'),
+    DatabaseService = require('./database/databaseService'),
     socket = require('./socket'),
     webpackDevMiddleware = require('webpack-dev-middleware'),
     webpackHotMiddleware = require('webpack-hot-middleware');

@@ -1,16 +1,27 @@
 const participants = require('../socket').participants;
-const db = require('../database/db');
+const db = require('./db');
 const moment = require('moment');
-const GameStates = require('../types').GameStates;
+const GameStates = require('../types').GameStatus;
 
 class DatabaseService {
     GAMES_COLLECTION = 'games';
 
     // GENERATE GAME
-    createGame = (gameId, cb) => {
-        // TODO Kan vi garantere at det blir unik gamepin hver gang?
-        // Må vi sjekke gamepin som finnes fra før?
-        const gamepin = Math.floor(1000 + Math.random() * 9000).toString();
+    createGame = async (gameId, cb) => {
+        let gamepin;
+        while (true) {
+            gamepin = Math.floor(1000 + Math.random() * 9000).toString();
+            const result = await db
+                .get()
+                .collection(this.GAMES_COLLECTION)
+                .find({ gamepin: gamepin })
+                .limit(1);
+
+            if (result.cursorState.documents == 0) {
+                break;
+            }
+        }
+
         db.get()
             .collection(this.GAMES_COLLECTION)
             .insertOne(
@@ -78,7 +89,7 @@ class DatabaseService {
             endTime:
                 status === 'IN_PROGRESS'
                     ? moment()
-                          .add(5, 'minutes')
+                          .add(15, 'minutes')
                           .utc()
                           .toISOString()
                     : undefined,
@@ -98,7 +109,7 @@ class DatabaseService {
             );
     }
 
-    async getGamestate(gamepin, cb) {
+    async getGamestate(gamepin) {
         return await db
             .get()
             .collection(this.GAMES_COLLECTION)
@@ -137,30 +148,22 @@ class DatabaseService {
     }
 
     // PARTICIPANTS
-    async updateParticipant(participant, gamepin) {}
-
-    async deleteParticipant(participant, gamepin) {
-        return await db.get().collection(this.GAMES_COLLECTION);
-    }
-
     async getParticipant(gamepin, uuid) {
         const game = await db
             .get()
             .collection(this.GAMES_COLLECTION)
             .findOne({ gamepin });
-        const participantState = {
+
+        return {
             ...game.participants[uuid],
             endTime: game.endTime,
             gameId: game.gameId,
             startTime: game.startTime,
             status: game.status,
         };
-
-        return participantState;
     }
 
     // WINNERS
-
     async toggleWinner(uuid) {
         return await db
             .get()
@@ -189,12 +192,11 @@ class DatabaseService {
     }
 
     async getWinners() {
-        const winners = await db
+        return await db
             .get()
             .collection(this.GAMES_COLLECTION)
             .find({})
             .toArray();
-        return winners;
     }
 }
 

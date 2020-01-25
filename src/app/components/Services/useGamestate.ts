@@ -1,10 +1,13 @@
 import * as React from 'react';
+import { useParams } from 'react-router';
 import { useSocket } from '../SocketProvider/SocketContext';
 import { IGamestate } from '../types';
 
-const useGamestate = (gamepin: string): IGamestate | undefined => {
+const useGamestate = (): IGamestate | undefined => {
     const socket = useSocket();
     const [gamestate, setGamestate] = React.useState<IGamestate | undefined>(undefined);
+
+    const { gamepin = '' } = useParams();
 
     React.useEffect(() => {
         socket.init(gamepin);

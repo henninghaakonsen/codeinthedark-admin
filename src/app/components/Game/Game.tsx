@@ -1,25 +1,30 @@
-import axios from 'axios';
-import * as moment from 'moment';
 import 'moment-duration-format';
 import * as React from 'react';
 import Preview from '../Preview/Preview';
-import { GameStates, IGamestate, IParticipant } from '../types';
+import { GameStatus, IGamestate, IParticipant } from '../types';
+import TimeLeft from './TimeLeft/TimeLeft';
 
 interface IProps {
     gamestate: IGamestate;
 }
 
 const Game: React.StatelessComponent<IProps> = ({ gamestate }) => {
+    const [render, setRender] = React.useState(false);
+
+    const onFrame = () => {
+        setRender(!render);
+        window.requestAnimationFrame(onFrame);
+    };
+
     return (
         <div className={'game'}>
             <div className={'game__settings'}>
                 <div className={'game__settings--tittel'}>Code in the Dark</div>
                 <div style={{ flex: 1 }} />
-                {gamestate.status === GameStates.IN_PROGRESS && 0 !== 0 && (
-                    <div className={'game__settings--countdown'}>
-                        {moment.duration('', 'seconds').format('mm:ss')}
-                    </div>
+                {gamestate.status === GameStatus.IN_PROGRESS && (
+                    <TimeLeft endTime={gamestate.endTime} />
                 )}
+                {gamestate.status === GameStatus.FINISHED && 'FINISHED'}
             </div>
             <div className={'previews'}>
                 {Object.values(gamestate.participants).map((participantData: IParticipant) => {
