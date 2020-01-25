@@ -9,13 +9,6 @@ interface IProps {
 }
 
 const Game: React.StatelessComponent<IProps> = ({ gamestate }) => {
-    const [render, setRender] = React.useState(false);
-
-    const onFrame = () => {
-        setRender(!render);
-        window.requestAnimationFrame(onFrame);
-    };
-
     return (
         <div className={'game'}>
             <div className={'game__settings'}>
