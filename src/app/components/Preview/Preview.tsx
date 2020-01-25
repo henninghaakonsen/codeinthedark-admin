@@ -2,13 +2,13 @@ import axios from 'axios';
 import * as classNames from 'classnames';
 import * as React from 'react';
 import useWindowSize from '../../hooks/useWindowSize';
-import { IParticipant, tournamentStates } from '../types';
+import { IParticipant, GameStates } from '../types';
 
 interface IProps {
     html: string;
     numberOfParticipants: number;
     participantData: IParticipant;
-    tournamentState: tournamentStates;
+    tournamentState: GameStates;
 }
 
 export const sizes = (numberOfParticipants: number) => {
@@ -70,7 +70,7 @@ const Preview: React.FunctionComponent<IProps> = ({
                 <div className={'previews__preview--bar-name'}>{participantData.name}</div>
                 <div style={{ flex: '1' }} />
 
-                {tournamentState === tournamentStates.FINISHED && (
+                {tournamentState === GameStates.FINISHED && (
                     <div
                         className={'app__settings--button'}
                         onClick={() => {

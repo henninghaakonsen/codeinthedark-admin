@@ -23,15 +23,14 @@ const setupParticipantRoutes = (adminSocket, databaseService) => {
     </html>`,
             };
 
-            gamestate.participants = {
-                ...gamestate.participants,
-                [uuid]: newParticipant,
-            };
+            const updatedGamestate = await databaseService.updateGamestate({
+                ...gamestate,
+                participants: {
+                    ...gamestate.participants,
+                    [uuid]: newParticipant,
+                },
+            });
 
-            await databaseService.updateGamestate(gamestate);
-            const updatedGamestate = await databaseService.getGamestate(gamepin);
-
-            console.log('updatedGamestate: ', updatedGamestate);
             adminSocket.emit(`gamestate-${gamepin}`, updatedGamestate);
             res.status(200).json(newParticipant);
         } else {

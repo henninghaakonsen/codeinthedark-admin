@@ -1,22 +1,11 @@
-const DatabaseService = require('./services/databaseService');
 const express = require('express'),
     nodeCron = require('node-cron'),
     path = require('path'),
     moment = require('moment'),
-    router = express.Router();
+    router = express.Router(),
+    GameStates = require('./types').GameStates;
 
-/**
- * gamestate: status, gameEnd
- */
-const statuses = {
-    IN_PROGRESS: 'IN_PROGRESS',
-    WAITING: 'WAITING',
-    FINISHED: 'FINISHED',
-};
-
-const setupRouter = (middleware, io, adminSocket, participantSocket) => {
-    const databaseService = new DatabaseService();
-
+const setupRouter = (middleware, io, adminSocket, participantSocket, databaseService) => {
     router.post('/games/create-game', async (req, res) => {
         await databaseService.createGame(req.body.gameId, game => {
             res.status(200).json(game);
@@ -24,16 +13,13 @@ const setupRouter = (middleware, io, adminSocket, participantSocket) => {
         });
     });
 
-    router.post('/participant-data', (req, res) => {
+    router.post('/participant-data', async (req, res) => {
         const body = req.body;
 
-        // cache.updateCache({
-        //     ...cache.getCache(),
-        //     [body.uuid]: body,
-        // });
-        res.status(200).send();
+        const updatedGamestate = await databaseService.updateContentForParticipant(body);
+        adminSocket.emit(`gamestate-${body.gamepin}`, updatedGamestate);
 
-        io.emit('participant-data', body);
+        res.status(200).send();
     });
 
     router.put('/game/:gamepin/update-state', async (req, res) => {
@@ -47,10 +33,10 @@ const setupRouter = (middleware, io, adminSocket, participantSocket) => {
             participantSocket
         );
 
-        if (gamestatus === statuses.IN_PROGRESS) {
+        if (gamestatus === GameStates.IN_PROGRESS) {
             const cron = nodeCron.schedule(dateToCron(gamestate.value.endTime), async () => {
                 await databaseService.setGameStateAndUpdateClients(
-                    statuses.FINISHED,
+                    GameStates.FINISHED,
                     gamepin,
                     adminSocket,
                     participantSocket
@@ -74,18 +60,23 @@ const setupRouter = (middleware, io, adminSocket, participantSocket) => {
     // });
 
     router.delete('/participant-data', (req, res) => {
-        // cache.updateCache({});
-        // cache.setGameState();
+        // TODO Slett fra databasen
 
         res.status(200).send();
+
+        // TODO Emit status og reset
         // io.emit('status', cache.getGameState());
         // io.emit('reset', cache.getCache());
     });
 
     router.delete('/participant-data/:uuid', (req, res) => {
+        // TODO Slett participant data i db
+
         // cache.deleteElement(req.params.uuid);
 
         res.status(200).send();
+        // TODO Emit participants-data fra db
+
         // io.emit('participants-data', cache.getCache());
     });
 
@@ -95,6 +86,8 @@ const setupRouter = (middleware, io, adminSocket, participantSocket) => {
         databaseService.updateWinners(body);
 
         res.status(200).send();
+        // TODO Emit vinnere fra databasen
+
         // io.emit('participants-winners', cache.getWinners());
     });
 

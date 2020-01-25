@@ -5,9 +5,9 @@ import Game from './components/Game/Game';
 import useGamestate from './components/Services/useGamestate';
 import SocketProvider from './components/SocketProvider/SocketProvider';
 import StartScreen from './components/StartScreen/StartScreen';
-import { tournamentStates } from './components/types';
 import WaitingScreen from './components/WaitingScreen/WaitingScreen';
 import Winners from './components/Winners/Winners';
+import { GameStates } from './components/types';
 import './index.less';
 
 const rootElement = document.getElementById('startscreen');
@@ -20,7 +20,7 @@ const renderApp = (Component: React.ComponentType<{}>): void => {
                     <Route
                         exact={true}
                         path={'/game/:gamepin'}
-                        render={({ match }) => <GameStates gamepin={match.params.gamepin} />}
+                        render={({ match }) => <GameStatuser gamepin={match.params.gamepin} />}
                     />
                     <Route exact={true} path={'/winners'} component={Winners} />
                 </Switch>
@@ -34,16 +34,16 @@ interface IProps {
     gamepin: string;
 }
 
-const GameStates: React.StatelessComponent<IProps> = ({ gamepin }) => {
+const GameStatuser: React.StatelessComponent<IProps> = ({ gamepin }) => {
     const gamestate = useGamestate(gamepin);
 
     if (gamestate) {
         switch (gamestate.status) {
-            case tournamentStates.NOT_STARTED:
+            case GameStates.CREATED:
                 return <WaitingScreen gamestate={gamestate} />;
-            case tournamentStates.IN_PROGRESS:
+            case GameStates.IN_PROGRESS:
                 return <Game gamestate={gamestate} />;
-            case tournamentStates.FINISHED:
+            case GameStates.FINISHED:
                 return <div style={{ color: 'white' }}>FINISHED!</div>;
             default:
                 return <div />;

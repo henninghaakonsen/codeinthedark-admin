@@ -59,7 +59,7 @@ let io = socketIo(server);
 const [adminSocket, participantSocket] = socket.setupSocket(io, databaseService);
 
 app.use('/participant', setupParticipantRoutes(adminSocket, databaseService));
-app.use('/', router.setupRouter(middleware, io, adminSocket, participantSocket));
+app.use('/', router.setupRouter(middleware, io, adminSocket, participantSocket, databaseService));
 
 db.connect(() => {
     server.listen(port, () => {
