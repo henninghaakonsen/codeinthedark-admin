@@ -1,7 +1,7 @@
 import axios, { AxiosResponse } from 'axios';
 import * as React from 'react';
 import { useHistory } from 'react-router';
-import { IGamestate, IParticipant, GameStates } from '../types';
+import { GameStatus, IGamestate, IParticipant } from '../types';
 
 interface IProps {
     gamestate: IGamestate;
@@ -28,7 +28,7 @@ const WaitingScreen: React.FunctionComponent<IProps> = ({ gamestate }) => {
                     onClick={() => {
                         axios
                             .put(`/game/${gamestate.gamepin}/update-state`, {
-                                gamestatus: GameStates.IN_PROGRESS,
+                                gamestatus: GameStatus.IN_PROGRESS,
                             })
                             .then((response: AxiosResponse) => {
                                 history.push(`/game/${gamestate.gamepin}`);

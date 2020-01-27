@@ -12,7 +12,6 @@ export class SocketService {
         return this;
     }
 
-    // link message event to rxjs data source
     public onGameStateData(gamepin: string): Observable<IGamestate> {
         return fromEvent(this.socket, `gamestate-${gamepin}`);
     }
@@ -21,7 +20,6 @@ export class SocketService {
         return fromEvent(this.socket, `participants-winners`);
     }
 
-    // disconnect - used when unmounting
     public disconnect(): void {
         this.socket.disconnect();
     }

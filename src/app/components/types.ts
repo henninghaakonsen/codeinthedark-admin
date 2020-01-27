@@ -1,4 +1,4 @@
-export enum GameStates {
+export enum GameStatus {
     CREATED = 'CREATED',
     IN_PROGRESS = 'IN_PROGRESS',
     FINISHED = 'FINISHED',
@@ -8,7 +8,7 @@ export interface IGamestate {
     created: string;
     gameId: string;
     gamepin: string;
-    status: GameStates;
+    status: GameStatus;
     endTime: string;
     startTime: string;
     participants: {

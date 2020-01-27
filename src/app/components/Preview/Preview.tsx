@@ -2,13 +2,13 @@ import axios from 'axios';
 import * as classNames from 'classnames';
 import * as React from 'react';
 import useWindowSize from '../../hooks/useWindowSize';
-import { IParticipant, GameStates } from '../types';
+import { GameStatus, IParticipant } from '../types';
 
 interface IProps {
     html: string;
     numberOfParticipants: number;
     participantData: IParticipant;
-    tournamentState: GameStates;
+    tournamentState: GameStatus;
 }
 
 export const sizes = (numberOfParticipants: number) => {
@@ -70,7 +70,7 @@ const Preview: React.FunctionComponent<IProps> = ({
                 <div className={'previews__preview--bar-name'}>{participantData.name}</div>
                 <div style={{ flex: '1' }} />
 
-                {tournamentState === GameStates.FINISHED && (
+                {tournamentState === GameStatus.FINISHED && (
                     <div
                         className={'app__settings--button'}
                         onClick={() => {
@@ -87,26 +87,6 @@ const Preview: React.FunctionComponent<IProps> = ({
                     }}
                 >
                     X
-                </div>
-            </div>
-
-            <div className="streak-container">
-                <div className="current">Combo</div>
-                <div key={participantData.animationKey} className="counter bump">
-                    {participantData.streak}
-                </div>
-                <div
-                    key={participantData.animationKey + 1}
-                    className={`bar ${
-                        participantData.animate && participantData.streak !== 0 ? 'animate' : ''
-                    }`}
-                />
-                <div className="exclamations">
-                    {participantData.exclamation && (
-                        <span key={participantData.exclamation} className="exclamation">
-                            {participantData.exclamation}
-                        </span>
-                    )}
                 </div>
             </div>
 
