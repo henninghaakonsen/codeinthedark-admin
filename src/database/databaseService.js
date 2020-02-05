@@ -89,7 +89,7 @@ class DatabaseService {
             endTime:
                 status === 'IN_PROGRESS'
                     ? moment()
-                          .add(15, 'minutes')
+                          .add(1, 'minutes')
                           .utc()
                           .toISOString()
                     : undefined,
@@ -154,13 +154,30 @@ class DatabaseService {
             .collection(this.GAMES_COLLECTION)
             .findOne({ gamepin });
 
-        return {
-            ...game.participants[uuid],
-            endTime: game.endTime,
-            gameId: game.gameId,
-            startTime: game.startTime,
-            status: game.status,
-        };
+        if (game && game.participants[uuid]) {
+            return {
+                ...game.participants[uuid],
+                endTime: game.endTime,
+                gameId: game.gameId,
+                startTime: game.startTime,
+                status: game.status,
+            };
+        } else {
+            return null;
+        }
+    }
+
+    async deleteParticipant(gamepin, uuid, participantSocket) {
+        const gamestate = await this.getGamestate(gamepin);
+
+        delete gamestate.participants[uuid];
+
+        const { id = '' } = participants[gamepin].find(client => client.uuid === uuid);
+        participantSocket.connected[id].disconnect();
+        return this.updateGamestate({
+            ...gamestate,
+            participants: gamestate.participants,
+        });
     }
 
     // WINNERS
