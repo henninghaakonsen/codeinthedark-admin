@@ -89,7 +89,7 @@ class DatabaseService {
             endTime:
                 status === 'IN_PROGRESS'
                     ? moment()
-                          .add(1, 'minutes')
+                          .add(15, 'minutes')
                           .utc()
                           .toISOString()
                     : undefined,
