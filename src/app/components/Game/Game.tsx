@@ -27,6 +27,7 @@ const Game: React.StatelessComponent<IProps> = ({ gamestate }) => {
                         <Preview
                             key={participantData.uuid}
                             html={body}
+                            gamepin={gamestate.gamepin}
                             participantData={participantData}
                             numberOfParticipants={Object.values(gamestate.participants).length}
                             tournamentState={gamestate.status}

@@ -5,6 +5,7 @@ import useWindowSize from '../../hooks/useWindowSize';
 import { GameStatus, IParticipant } from '../types';
 
 interface IProps {
+    gamepin: string;
     html: string;
     numberOfParticipants: number;
     participantData: IParticipant;
@@ -31,6 +32,7 @@ export const sizes = (numberOfParticipants: number) => {
 };
 
 const Preview: React.FunctionComponent<IProps> = ({
+    gamepin,
     html,
     numberOfParticipants,
     participantData,
@@ -72,7 +74,7 @@ const Preview: React.FunctionComponent<IProps> = ({
 
                 {tournamentState === GameStatus.FINISHED && (
                     <div
-                        className={'app__settings--button'}
+                        className={'game__settings--button'}
                         onClick={() => {
                             axios.post(`/new-winner`, participantData);
                         }}
@@ -81,9 +83,9 @@ const Preview: React.FunctionComponent<IProps> = ({
                     </div>
                 )}
                 <div
-                    className={'app__settings--button'}
+                    className={'game__settings--button'}
                     onClick={() => {
-                        axios.delete(`/participant-data/${participantData.uuid}`);
+                        axios.delete(`/game/${gamepin}/${participantData.uuid}`);
                     }}
                 >
                     X

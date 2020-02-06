@@ -40,6 +40,7 @@ const removeParticipant = (clientUuid, gamepin) => {
             client => client.uuid !== clientUuid
         );
         participants[gamepin] = updatedParticipants;
+        
         console.log('Participants after unregister: ', participants[gamepin]);
     }
 };
@@ -70,10 +71,14 @@ const setupSocket = (io, databaseService) => {
         addParticipant(client.id, uuid, gamepin);
         console.log('Gamepin on connection', gamepin);
 
-        participantSocket.connected[client.id].emit(
-            `gamestate`,
-            await databaseService.getParticipant(gamepin, uuid)
-        );
+        const participantGamestate = await databaseService.getParticipant(gamepin, uuid);
+        if (!participantGamestate) {
+            participantSocket.connected[client.id].disconnect();
+            removeParticipant(uuid, gamepin);
+            return;
+        }
+
+        participantSocket.connected[client.id].emit(`gamestate`, participantGamestate);
 
         client.on('disconnect', () => {
             console.log(`participant disconnected => uuid: ${uuid}`);

@@ -42,6 +42,22 @@ const setupRouter = (middleware, io, adminSocket, participantSocket, databaseSer
         res.status(200).send();
     });
 
+    router.delete('/game/:gamepin/:uuid', async (req, res) => {
+        const { gamepin, uuid } = req.params;
+
+        const game = await databaseService.deleteParticipant(gamepin, uuid, participantSocket);
+        adminSocket.emit(`gamestate-${game.gamepin}`, game);
+    });
+
+    router.get('/game/:gamepin/:uuid', async (req, res) => {
+        const { gamepin, uuid } = req.params;
+
+        const participant = await databaseService.getParticipant(gamepin, uuid);
+        res.writeHead(200, { 'Content-Type': 'text/html; charset=utf-8' });
+        res.write(participant.content);
+        res.end();
+    });
+
     const dateToCron = date => {
         return moment(date).format('S m H D M d');
     };
