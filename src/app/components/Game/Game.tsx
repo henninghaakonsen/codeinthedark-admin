@@ -24,7 +24,7 @@ const Game: React.StatelessComponent<IProps> = ({ gamestate }) => {
                 </Breadcrumb>
                 <div style={{ flex: 1 }} />
                 {gamestate.status === GameStatus.IN_PROGRESS && (
-                    <TimeLeft endTime={gamestate.endTime} />
+                    <TimeLeft className={'game__countdown'} endTime={gamestate.endTime} />
                 )}
                 {gamestate.status === GameStatus.FINISHED && 'FINISHED'}
             </div>

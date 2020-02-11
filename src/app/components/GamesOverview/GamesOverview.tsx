@@ -1,8 +1,9 @@
 import * as moment from 'moment';
 import * as React from 'react';
 import { Card, Grid } from 'semantic-ui-react';
-import { gamestatusTranslator, IGamestate, IParticipant } from '../types';
+import { gamestatusTranslator, IGamestate, IParticipant, GameStatus } from '../types';
 import useGamesHook from './gamesOverviewHook';
+import TimeLeft from '../Game/TimeLeft/TimeLeft';
 
 moment.locale('nb');
 
@@ -21,6 +22,11 @@ const GamesOverview: React.StatelessComponent = () => {
                                     <Card.Header>{game.gameId}</Card.Header>
                                     <Card.Meta>{moment(game.created).format('LLL')}</Card.Meta>
                                     <Card.Meta>{gamestatusTranslator[game.status]}</Card.Meta>
+                                    {game.status === GameStatus.IN_PROGRESS && (
+                                        <Card.Meta>
+                                            <TimeLeft endTime={game.endTime} />
+                                        </Card.Meta>
+                                    )}
                                     <Card.Description>
                                         {Object.values(game.participants).map(
                                             (participant: IParticipant) => {
