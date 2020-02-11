@@ -58,6 +58,12 @@ const setupRouter = (middleware, io, adminSocket, participantSocket, databaseSer
         res.end();
     });
 
+    router.get('/ongoing-or-created-games', async (req, res) => {
+        const ongoingOrCreatedGames = await databaseService.getCreatedOrOngoingGames();
+
+        res.status(200).json(ongoingOrCreatedGames);
+    });
+
     const dateToCron = date => {
         return moment(date).format('S m H D M d');
     };

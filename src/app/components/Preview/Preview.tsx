@@ -3,6 +3,7 @@ import * as classNames from 'classnames';
 import * as React from 'react';
 import useWindowSize from '../../hooks/useWindowSize';
 import { GameStatus, IParticipant } from '../types';
+import { Button, Icon } from 'semantic-ui-react';
 
 interface IProps {
     gamepin: string;
@@ -82,14 +83,16 @@ const Preview: React.FunctionComponent<IProps> = ({
                         WINNER
                     </div>
                 )}
-                <div
-                    className={'game__settings--button'}
+                <Button
+                    icon={true}
                     onClick={() => {
                         axios.delete(`/game/${gamepin}/${participantData.uuid}`);
                     }}
+                    labelPosition="right"
                 >
-                    X
-                </div>
+                    Fjern deltager
+                    <Icon name="remove" />
+                </Button>
             </div>
 
             <div className={'previews__preview__iframecontainer'}>

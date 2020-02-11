@@ -4,6 +4,12 @@ export enum GameStatus {
     FINISHED = 'FINISHED',
 }
 
+export const gamestatusTranslator = {
+    CREATED: 'Opprettet',
+    FINISHED: 'Ferdig',
+    IN_PROGRESS: 'Pågår',
+};
+
 export interface IGamestate {
     created: string;
     gameId: string;

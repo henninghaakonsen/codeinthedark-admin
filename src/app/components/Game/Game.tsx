@@ -1,5 +1,6 @@
 import 'moment-duration-format';
 import * as React from 'react';
+import { Breadcrumb } from 'semantic-ui-react';
 import Preview from '../Preview/Preview';
 import { GameStatus, IGamestate, IParticipant } from '../types';
 import TimeLeft from './TimeLeft/TimeLeft';
@@ -12,7 +13,15 @@ const Game: React.StatelessComponent<IProps> = ({ gamestate }) => {
     return (
         <div className={'game'}>
             <div className={'game__settings'}>
-                <div className={'game__settings--tittel'}>Code in the Dark</div>
+                <Breadcrumb inverted={true} size={'huge'}>
+                    <Breadcrumb.Section link={true} href={'/'}>
+                        Code in the Dark
+                    </Breadcrumb.Section>
+                    <Breadcrumb.Divider style={{ color: 'white' }} icon="right chevron" />
+                    <Breadcrumb.Section style={{ color: 'white' }} active={true}>
+                        {gamestate.gamepin}
+                    </Breadcrumb.Section>
+                </Breadcrumb>
                 <div style={{ flex: 1 }} />
                 {gamestate.status === GameStatus.IN_PROGRESS && (
                     <TimeLeft endTime={gamestate.endTime} />

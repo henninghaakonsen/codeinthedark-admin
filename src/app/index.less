@@ -1,16 +1,5 @@
-@font-face {
-    font-family: 'Press Start 2P';
-    src: url("/assets/PressStart2P-Regular.ttf") format('truetype');
-}
-
-@font-face {
-  font-family: 'Chicken Dinner';
-  src: url("/assets/Chicken Dinner Demo.otf") format('truetype');
-}
-
 body,
 html {
-  //font-family: 'Chicken Dinner', sans-serif;
   width: 100%;
   height: 100%;
   overflow: hidden;
@@ -19,7 +8,6 @@ html {
 }
 
 button {
-  font-family: "Press Start 2P", sans-serif;
   appearance: none;
   background-color: #3a9364;
   color: white;
@@ -40,6 +28,7 @@ button {
   }
 }
 
+@import "./components/GamesOverview/gamesoverview.less";
 @import "./components/StartScreen/startscreen.less";
 @import "./components/WaitingScreen/waitingscreen.less";
 @import "./components/Game/game.less";
