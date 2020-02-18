@@ -4,6 +4,7 @@ const sanityClient = require('@sanity/client');
 import axios, { AxiosResponse } from 'axios';
 import * as React from 'react';
 import { useHistory } from 'react-router-dom';
+import { Button } from 'semantic-ui-react';
 
 const client = sanityClient({
     dataset: 'production',
@@ -69,7 +70,8 @@ const StartScreen: React.FunctionComponent = () => {
                 </div>
 
                 <div className={'startscreen__konfigurasjon--start'}>
-                    <button
+                    <Button
+                        primary={true}
                         onClick={() =>
                             axios
                                 .post('/games/create-game', {
@@ -81,7 +83,7 @@ const StartScreen: React.FunctionComponent = () => {
                         }
                     >
                         Opprett spill
-                    </button>
+                    </Button>
                 </div>
             </div>
         </div>

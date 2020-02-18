@@ -6,6 +6,14 @@ const GameStates = require('../types').GameStatus;
 class DatabaseService {
     GAMES_COLLECTION = 'games';
 
+    getCreatedOrOngoingGames = async () => {
+        return await db
+            .get()
+            .collection(this.GAMES_COLLECTION)
+            .find({ status: { $in: [GameStates.CREATED, GameStates.IN_PROGRESS] } })
+            .toArray();
+    };
+
     // GENERATE GAME
     createGame = async (gameId, cb) => {
         let gamepin;
@@ -26,7 +34,9 @@ class DatabaseService {
             .collection(this.GAMES_COLLECTION)
             .insertOne(
                 {
-                    created: new Date().toUTCString(),
+                    created: moment()
+                        .utc()
+                        .toISOString(),
                     gameId,
                     gamepin,
                     status: GameStates.CREATED,

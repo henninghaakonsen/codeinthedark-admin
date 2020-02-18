@@ -2,10 +2,11 @@ import * as moment from 'moment';
 import * as React from 'react';
 
 interface IProps {
+    className?: string;
     endTime: string | undefined;
 }
 
-const TimeLeft: React.StatelessComponent<IProps> = ({ endTime }) => {
+const TimeLeft: React.StatelessComponent<IProps> = ({ endTime, className }) => {
     if (!endTime) {
         return <></>;
     }
@@ -19,11 +20,7 @@ const TimeLeft: React.StatelessComponent<IProps> = ({ endTime }) => {
         }, 1000);
     }, [endTime]);
 
-    return (
-        <div className={'game__countdown'}>{`Gjenstår ${moment
-            .utc(timeLeft)
-            .format('mm:ss')}`}</div>
-    );
+    return <div className={className}>{`Gjenstår ${moment.utc(timeLeft).format('mm:ss')}`}</div>;
 };
 
 export default TimeLeft;
