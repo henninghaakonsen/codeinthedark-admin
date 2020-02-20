@@ -6,11 +6,15 @@ const GameStates = require('../types').GameStatus;
 class DatabaseService {
     GAMES_COLLECTION = 'games';
 
-    getCreatedOrOngoingGames = async () => {
+    getCreatedOrOngoingGames = async limit => {
         return await db
             .get()
             .collection(this.GAMES_COLLECTION)
-            .find({ status: { $in: [GameStates.CREATED, GameStates.IN_PROGRESS] } })
+            .find({
+                status: { $in: [GameStates.CREATED, GameStates.IN_PROGRESS, GameStates.FINISHED] },
+            })
+            .sort({ created: 1 })
+            .limit(limit)
             .toArray();
     };
 

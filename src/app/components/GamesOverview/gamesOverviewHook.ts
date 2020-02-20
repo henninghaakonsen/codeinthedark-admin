@@ -3,15 +3,16 @@ import * as React from 'react';
 import { IGamestate } from '../types';
 
 const useGamesHook = () => {
-    const [ongoingOrCreatedGames, setOngoingOrCreatedGames] = React.useState<IGamestate[]>([]);
+    const [games, setGames] = React.useState<IGamestate[]>([]);
+    const [limit, setLimit] = React.useState('30');
 
     React.useEffect(() => {
-        axios.get('/ongoing-or-created-games').then((response: AxiosResponse<IGamestate[]>) => {
-            setOngoingOrCreatedGames(response.data);
+        axios.get(`/games?limit=${limit}`).then((response: AxiosResponse<IGamestate[]>) => {
+            setGames(response.data);
         });
-    }, []);
+    }, [limit]);
 
-    return ongoingOrCreatedGames;
+    return { games, limit, setLimit };
 };
 
 export default useGamesHook;

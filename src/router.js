@@ -58,8 +58,11 @@ const setupRouter = (middleware, io, adminSocket, participantSocket, databaseSer
         res.end();
     });
 
-    router.get('/ongoing-or-created-games', async (req, res) => {
-        const ongoingOrCreatedGames = await databaseService.getCreatedOrOngoingGames();
+    router.get('/games', async (req, res) => {
+        const { limit = 30 } = req.query;
+        const ongoingOrCreatedGames = await databaseService.getCreatedOrOngoingGames(
+            parseInt(limit)
+        );
 
         res.status(200).json(ongoingOrCreatedGames);
     });
