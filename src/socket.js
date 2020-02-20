@@ -40,7 +40,7 @@ const removeParticipant = (clientUuid, gamepin) => {
             client => client.uuid !== clientUuid
         );
         participants[gamepin] = updatedParticipants;
-        
+
         console.log('Participants after unregister: ', participants[gamepin]);
     }
 };
@@ -65,11 +65,9 @@ const setupSocket = (io, databaseService) => {
     });
 
     participantSocket.on('connection', async client => {
-        console.log('Client', client);
         const gamepin = client.handshake.query.gamepin;
         const uuid = client.handshake.query.uuid;
         addParticipant(client.id, uuid, gamepin);
-        console.log('Gamepin on connection', gamepin);
 
         const participantGamestate = await databaseService.getParticipant(gamepin, uuid);
         if (!participantGamestate) {

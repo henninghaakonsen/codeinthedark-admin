@@ -41,29 +41,27 @@ const Preview: React.FunctionComponent<IProps> = ({
             className={classNames('previews__preview', participantData.powerMode && 'power-mode')}
             key={participantData.uuid}
         >
-            <Card.Content inverted={true}>
-                <Card.Content extra={true}>
-                    <Button.Group floated={'right'}>
-                        {tournamentState === GameStatus.FINISHED && (
-                            <Vinnerknapper participantData={participantData} />
-                        )}
+            <Card.Content extra={true}>
+                <Button.Group floated={'right'}>
+                    {tournamentState === GameStatus.FINISHED && (
+                        <Vinnerknapper participantData={participantData} />
+                    )}
 
-                        <Button
-                            icon={true}
-                            onClick={() => {
-                                if (confirm('Er du sikker på at du vil fjerne deltageren?')) {
-                                    axios.delete(`/game/${gamepin}/${participantData.uuid}`);
-                                }
-                            }}
-                            labelPosition="right"
-                        >
-                            Fjern deltager
-                            <Icon name="remove" />
-                        </Button>
-                    </Button.Group>
+                    <Button
+                        icon={true}
+                        onClick={() => {
+                            if (confirm('Er du sikker på at du vil fjerne deltageren?')) {
+                                axios.delete(`/game/${gamepin}/${participantData.uuid}`);
+                            }
+                        }}
+                        labelPosition="right"
+                    >
+                        Fjern deltager
+                        <Icon name="remove" />
+                    </Button>
+                </Button.Group>
 
-                    <Card.Header>{participantData.name}</Card.Header>
-                </Card.Content>
+                <Card.Header>{participantData.name}</Card.Header>
             </Card.Content>
             <div className={'previews__preview__iframecontainer'}>
                 <iframe
