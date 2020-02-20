@@ -13,6 +13,7 @@ const setupParticipantRoutes = (adminSocket, databaseService) => {
                 name,
                 uuid,
                 gamepin,
+                winner: false,
                 content: `<html>
         <style>
     

@@ -1,6 +1,5 @@
-import 'moment-duration-format';
 import * as React from 'react';
-import { Breadcrumb, Grid, Card } from 'semantic-ui-react';
+import { Breadcrumb, Card } from 'semantic-ui-react';
 import Preview from '../Preview/Preview';
 import { GameStatus, IGamestate, IParticipant } from '../types';
 import TimeLeft from './TimeLeft/TimeLeft';
@@ -10,15 +9,11 @@ interface IProps {
 }
 
 const Game: React.StatelessComponent<IProps> = ({ gamestate }) => {
-    console.log(Object.values(gamestate.participants).length / 2);
-    const antallRader = Object.values(gamestate.participants).length / 2;
     return (
         <div className={'game'}>
             <div className={'game__settings'}>
-                <Breadcrumb inverted={true} size={'huge'}>
-                    <Breadcrumb.Section link={true} href={'/'}>
-                        Code in the Dark
-                    </Breadcrumb.Section>
+                <Breadcrumb size={'huge'}>
+                    <Breadcrumb.Section href={'/'}>Code in the Dark</Breadcrumb.Section>
                     <Breadcrumb.Divider style={{ color: 'white' }} icon="right chevron" />
                     <Breadcrumb.Section style={{ color: 'white' }} active={true}>
                         {gamestate.gamepin}

@@ -31,6 +31,7 @@ export interface IParticipant {
     powerMode: boolean;
     streak: number;
     uuid: string;
+    winner: boolean;
 }
 
 export interface IKeyPair {

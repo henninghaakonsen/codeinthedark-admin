@@ -191,31 +191,23 @@ class DatabaseService {
     }
 
     // WINNERS
-    async toggleWinner(uuid) {
-        return await db
-            .get()
-            .collection(this.GAMES_COLLECTION)
-            .findOneAndUpdate(
-                { uuid },
-                {
-                    $set: {
-                        winner: true,
-                    },
+    async toggleWinner(gamepin, uuid) {
+        const game = await this.getGamestate(gamepin);
+
+        const updatedGame = {
+            ...game,
+            participants: {
+                ...game.participants,
+                [uuid]: {
+                    ...game.participants[uuid],
+                    winner: !game.participants[uuid].winner,
                 },
-                { returnOriginal: false }
-            );
-    }
+            },
+        };
 
-    updateWinners(dirtyWinner) {
-        db.get()
-            .collection(this.GAMES_COLLECTION)
-            .insertOne(dirtyWinner, function(err, result) {
-                if (err) {
-                    console.log('Det var en feil ved oppdatering av vinnere til basen', err);
-                }
+        const updatedGamestate = await this.updateGamestate(updatedGame);
 
-                console.log(`${result.result.n} vinnere ble lagt til`);
-            });
+        return updatedGamestate;
     }
 
     async getWinners() {

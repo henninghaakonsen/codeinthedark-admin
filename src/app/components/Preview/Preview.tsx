@@ -1,8 +1,7 @@
 import axios from 'axios';
 import * as classNames from 'classnames';
 import * as React from 'react';
-import { Button, Icon, Card } from 'semantic-ui-react';
-import useWindowSize from '../../hooks/useWindowSize';
+import { Button, Card, Icon } from 'semantic-ui-react';
 import { GameStatus, IParticipant } from '../types';
 
 interface IProps {
@@ -46,19 +45,15 @@ const Preview: React.FunctionComponent<IProps> = ({
                 <Card.Content extra={true}>
                     <Button.Group floated={'right'}>
                         {tournamentState === GameStatus.FINISHED && (
-                            <Button
-                                className={'game__settings--button'}
-                                onClick={() => {
-                                    axios.post(`/new-winner`, participantData);
-                                }}
-                            >
-                                WINNER
-                            </Button>
+                            <Vinnerknapper participantData={participantData} />
                         )}
+
                         <Button
                             icon={true}
                             onClick={() => {
-                                axios.delete(`/game/${gamepin}/${participantData.uuid}`);
+                                if (confirm('Er du sikker på at du vil fjerne deltageren?')) {
+                                    axios.delete(`/game/${gamepin}/${participantData.uuid}`);
+                                }
                             }}
                             labelPosition="right"
                         >
@@ -66,6 +61,7 @@ const Preview: React.FunctionComponent<IProps> = ({
                             <Icon name="remove" />
                         </Button>
                     </Button.Group>
+
                     <Card.Header>{participantData.name}</Card.Header>
                 </Card.Content>
             </Card.Content>
@@ -80,6 +76,44 @@ const Preview: React.FunctionComponent<IProps> = ({
                 />
             </div>
         </Card>
+    );
+};
+
+interface IVinnerknappeProps {
+    participantData: IParticipant;
+}
+
+const Vinnerknapper: React.FunctionComponent<IVinnerknappeProps> = ({
+    participantData,
+}: IVinnerknappeProps) => {
+    if (participantData.winner) {
+        return (
+            <Button
+                color="red"
+                icon={true}
+                onClick={() => {
+                    axios.post(`/toggle-winner`, participantData);
+                }}
+                labelPosition="right"
+            >
+                Fjern som vinner
+                <Icon name="remove circle" />
+            </Button>
+        );
+    }
+
+    return (
+        <Button
+            color="green"
+            icon={true}
+            onClick={() => {
+                axios.post(`/toggle-winner`, participantData);
+            }}
+            labelPosition="right"
+        >
+            Velg som vinner
+            <Icon name="star" />
+        </Button>
     );
 };
 
