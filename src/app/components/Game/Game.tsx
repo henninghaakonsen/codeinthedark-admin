@@ -1,6 +1,5 @@
-import 'moment-duration-format';
 import * as React from 'react';
-import { Breadcrumb } from 'semantic-ui-react';
+import { Breadcrumb, Card } from 'semantic-ui-react';
 import Preview from '../Preview/Preview';
 import { GameStatus, IGamestate, IParticipant } from '../types';
 import TimeLeft from './TimeLeft/TimeLeft';
@@ -27,20 +26,21 @@ const Game: React.StatelessComponent<IProps> = ({ gamestate }) => {
                 {gamestate.status === GameStatus.FINISHED && 'FINISHED'}
             </div>
             <div className={'previews'}>
-                {Object.values(gamestate.participants).map((participantData: IParticipant) => {
-                    const body = participantData.content.replace(/(\r\n|\n|\r)/gm, '');
+                <Card.Group itemsPerRow={3}>
+                    {Object.values(gamestate.participants).map((participantData: IParticipant) => {
+                        const body = participantData.content.replace(/(\r\n|\n|\r)/gm, '');
 
-                    return (
-                        <Preview
-                            key={participantData.uuid}
-                            html={body}
-                            gamepin={gamestate.gamepin}
-                            participantData={participantData}
-                            numberOfParticipants={Object.values(gamestate.participants).length}
-                            tournamentState={gamestate.status}
-                        />
-                    );
-                })}
+                        return (
+                            <Preview
+                                key={participantData.uuid}
+                                html={body}
+                                gamepin={gamestate.gamepin}
+                                participantData={participantData}
+                                tournamentState={gamestate.status}
+                            />
+                        );
+                    })}
+                </Card.Group>
             </div>
         </div>
     );

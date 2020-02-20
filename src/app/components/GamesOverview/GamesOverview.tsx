@@ -1,9 +1,9 @@
 import * as moment from 'moment';
 import * as React from 'react';
-import { Card, Grid } from 'semantic-ui-react';
-import { gamestatusTranslator, IGamestate, IParticipant, GameStatus } from '../types';
-import useGamesHook from './gamesOverviewHook';
+import { Card } from 'semantic-ui-react';
 import TimeLeft from '../Game/TimeLeft/TimeLeft';
+import { GameStatus, gamestatusTranslator, IGamestate, IParticipant } from '../types';
+import useGamesHook from './gamesOverviewHook';
 
 moment.locale('nb');
 

@@ -5,6 +5,7 @@
         padding: .5rem 1rem;
         font-size: 1.5rem;
         border-bottom: 2px solid white;
+        color: white;
 
         &--tittel {
             color: white;
@@ -57,24 +58,18 @@
 }
 
 .previews {
-    display: flex;
-    flex-wrap: wrap;
-    height: calc(100% - 5rem);
+    overflow: auto;
+    height: calc(100vh - 2rem);
     justify-content: space-between;
-    padding-top: 1rem;
+    padding: 2rem;
     width: 100%;
 
+    & .ui.card {
+        border: 0px solid;
+    }
+
     &__preview {
-        padding: 0 1rem;
-    
-        &--bar {
-            display: flex;
-    
-            &-name {
-                color: white;
-                padding-bottom: .5rem;
-            }
-        }
+        height: calc(50vh - 4rem);
     
         &__iframecontainer {
             position: relative;
