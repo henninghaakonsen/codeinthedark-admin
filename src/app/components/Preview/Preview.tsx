@@ -32,6 +32,44 @@ export const sizes = (numberOfParticipants: number) => {
     }
 };
 
+interface VinnerknappeProps {
+    participantData: IParticipant;
+}
+
+const Vinnerknapper: React.FunctionComponent<VinnerknappeProps> = ({
+    participantData,
+}: VinnerknappeProps) => {
+    if (participantData.winner) {
+        return (
+            <Button
+                color="red"
+                icon={true}
+                onClick={() => {
+                    axios.post(`/toggle-winner`, participantData);
+                }}
+                labelPosition="right"
+            >
+                Fjern som vinner
+                <Icon name="remove circle" />
+            </Button>
+        );
+    }
+
+    return (
+        <Button
+            color="green"
+            icon={true}
+            onClick={() => {
+                axios.post(`/toggle-winner`, participantData);
+            }}
+            labelPosition="right"
+        >
+            Velg som vinner
+            <Icon name="star" />
+        </Button>
+    );
+};
+
 const Preview: React.FunctionComponent<IProps> = ({
     gamepin,
     html,
@@ -74,19 +112,15 @@ const Preview: React.FunctionComponent<IProps> = ({
                 <div style={{ flex: '1' }} />
 
                 {tournamentState === GameStatus.FINISHED && (
-                    <div
-                        className={'game__settings--button'}
-                        onClick={() => {
-                            axios.post(`/new-winner`, participantData);
-                        }}
-                    >
-                        WINNER
-                    </div>
+                    <Vinnerknapper participantData={participantData} />
                 )}
+
                 <Button
                     icon={true}
                     onClick={() => {
-                        axios.delete(`/game/${gamepin}/${participantData.uuid}`);
+                        if (confirm('Er du sikker på at du vil fjerne deltageren?')) {
+                            axios.delete(`/game/${gamepin}/${participantData.uuid}`);
+                        }
                     }}
                     labelPosition="right"
                 >

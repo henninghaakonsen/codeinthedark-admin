@@ -68,15 +68,14 @@ const setupRouter = (middleware, io, adminSocket, participantSocket, databaseSer
         return moment(date).format('S m H D M d');
     };
 
-    router.post('/new-winner', (req, res) => {
+    router.post('/toggle-winner', async (req, res) => {
         const body = req.body;
 
-        databaseService.updateWinners(body);
+        const updatedGamestate = await databaseService.toggleWinner(body.gamepin, body.uuid);
 
-        res.status(200).send();
-        // TODO Emit vinnere fra databasen
+        res.status(200).send(updatedGamestate);
 
-        // io.emit('participants-winners', cache.getWinners());
+        adminSocket.emit(`gamestate-${body.gamepin}`, updatedGamestate);
     });
 
     router.delete('/winners/:uuid', (req, res) => {

@@ -13,10 +13,8 @@ const Game: React.StatelessComponent<IProps> = ({ gamestate }) => {
     return (
         <div className={'game'}>
             <div className={'game__settings'}>
-                <Breadcrumb inverted={true} size={'huge'}>
-                    <Breadcrumb.Section link={true} href={'/'}>
-                        Code in the Dark
-                    </Breadcrumb.Section>
+                <Breadcrumb size={'huge'}>
+                    <Breadcrumb.Section href={'/'}>Code in the Dark</Breadcrumb.Section>
                     <Breadcrumb.Divider style={{ color: 'white' }} icon="right chevron" />
                     <Breadcrumb.Section style={{ color: 'white' }} active={true}>
                         {gamestate.gamepin}
