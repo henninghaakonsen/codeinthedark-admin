@@ -1,41 +1,20 @@
 import axios from 'axios';
 import * as classNames from 'classnames';
 import * as React from 'react';
+import { Button, Icon, Card } from 'semantic-ui-react';
 import useWindowSize from '../../hooks/useWindowSize';
 import { GameStatus, IParticipant } from '../types';
-import { Button, Icon } from 'semantic-ui-react';
 
 interface IProps {
     gamepin: string;
     html: string;
-    numberOfParticipants: number;
     participantData: IParticipant;
     tournamentState: GameStatus;
 }
 
-export const sizes = (numberOfParticipants: number) => {
-    if (numberOfParticipants === 1) {
-        return {
-            height: (innerHeight: number) => `${innerHeight * 1 - 8}px`,
-            width: (innerWidth: number) => `${innerWidth * 1 - 24}px`,
-        };
-    } else if (numberOfParticipants <= 4) {
-        return {
-            height: (innerHeight: number) => `${innerHeight * 0.5 - 8}px`,
-            width: (innerWidth: number) => `${innerWidth * 0.5 - 24}px`,
-        };
-    } else {
-        return {
-            height: (innerHeight: number) => `100%`,
-            width: (innerWidth: number) => `100%`,
-        };
-    }
-};
-
 const Preview: React.FunctionComponent<IProps> = ({
     gamepin,
     html,
-    numberOfParticipants,
     participantData,
     tournamentState,
 }) => {
@@ -45,8 +24,6 @@ const Preview: React.FunctionComponent<IProps> = ({
 
     const [firstHtml, setFirstHtml] = React.useState(html);
     const [secondHtml, setSecondHtml] = React.useState(html);
-
-    const windowSize = useWindowSize();
 
     React.useEffect(() => {
         if (currentVisible === 0) {
@@ -61,40 +38,37 @@ const Preview: React.FunctionComponent<IProps> = ({
     }, [html]);
 
     return (
-        <div
-            style={{
-                height: `${sizes(numberOfParticipants).height(windowSize.height)}`,
-                width: `${sizes(numberOfParticipants).width(windowSize.width)}`,
-            }}
+        <Card
             className={classNames('previews__preview', participantData.powerMode && 'power-mode')}
             key={participantData.uuid}
         >
-            <div className={'previews__preview--bar'}>
-                <div className={'previews__preview--bar-name'}>{participantData.name}</div>
-                <div style={{ flex: '1' }} />
-
-                {tournamentState === GameStatus.FINISHED && (
-                    <div
-                        className={'game__settings--button'}
-                        onClick={() => {
-                            axios.post(`/new-winner`, participantData);
-                        }}
-                    >
-                        WINNER
-                    </div>
-                )}
-                <Button
-                    icon={true}
-                    onClick={() => {
-                        axios.delete(`/game/${gamepin}/${participantData.uuid}`);
-                    }}
-                    labelPosition="right"
-                >
-                    Fjern deltager
-                    <Icon name="remove" />
-                </Button>
-            </div>
-
+            <Card.Content inverted={true}>
+                <Card.Content extra={true}>
+                    <Button.Group floated={'right'}>
+                        {tournamentState === GameStatus.FINISHED && (
+                            <Button
+                                className={'game__settings--button'}
+                                onClick={() => {
+                                    axios.post(`/new-winner`, participantData);
+                                }}
+                            >
+                                WINNER
+                            </Button>
+                        )}
+                        <Button
+                            icon={true}
+                            onClick={() => {
+                                axios.delete(`/game/${gamepin}/${participantData.uuid}`);
+                            }}
+                            labelPosition="right"
+                        >
+                            Fjern deltager
+                            <Icon name="remove" />
+                        </Button>
+                    </Button.Group>
+                    <Card.Header>{participantData.name}</Card.Header>
+                </Card.Content>
+            </Card.Content>
             <div className={'previews__preview__iframecontainer'}>
                 <iframe
                     className={currentVisible === 0 ? 'visible' : 'hidden'}
@@ -105,7 +79,7 @@ const Preview: React.FunctionComponent<IProps> = ({
                     srcDoc={secondHtml}
                 />
             </div>
-        </div>
+        </Card>
     );
 };
 

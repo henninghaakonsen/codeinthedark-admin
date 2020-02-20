@@ -2,13 +2,11 @@ import axios from 'axios';
 import * as classNames from 'classnames';
 import * as React from 'react';
 import useWindowSize from '../../hooks/useWindowSize';
-import { sizes } from '../Preview/Preview';
 import useWinnersDataService from '../Services/useWinnersDataService';
 import { IParticipant } from '../types';
 
 const Winners: React.FunctionComponent<{}> = () => {
     const [winners, setWinners] = useWinnersDataService();
-    const windowSize = useWindowSize();
 
     return (
         <div className={'winners'}>
@@ -22,10 +20,6 @@ const Winners: React.FunctionComponent<{}> = () => {
 
                     return (
                         <div
-                            style={{
-                                height: `${sizes(4).height(windowSize.height)}`,
-                                width: `${sizes(4).width(windowSize.width)}`,
-                            }}
                             className={classNames(
                                 'winners__wrap--container',
                                 winners[winnerKey].powerMode && 'power-mode'
