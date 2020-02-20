@@ -1,3 +1,5 @@
+const setupSanityRoutes = require('./routes/sanity');
+
 require('dotenv').config();
 
 const bodyParser = require('body-parser');
@@ -60,6 +62,7 @@ let io = socketIo(server);
 const [adminSocket, participantSocket] = socket.setupSocket(io, databaseService);
 
 app.use('/participant', setupParticipantRoutes(adminSocket, databaseService));
+app.use('/sanity', setupSanityRoutes());
 app.use('/', router.setupRouter(middleware, io, adminSocket, participantSocket, databaseService));
 
 db.connect(() => {

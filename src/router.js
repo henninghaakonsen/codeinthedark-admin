@@ -1,6 +1,7 @@
 const express = require('express'),
     nodeCron = require('node-cron'),
     path = require('path'),
+    matcher = require('./matcher'),
     moment = require('moment'),
     router = express.Router(),
     GameStates = require('./types').GameStatus;
@@ -17,7 +18,7 @@ const setupRouter = (middleware, io, adminSocket, participantSocket, databaseSer
         const { gamepin } = req.params;
         const { gamestatus } = req.body;
 
-        const gamestate = await databaseService.setGameStateAndUpdateClients(
+        const gamestate = await databaseService.setGameStatusAndUpdateClients(
             gamestatus,
             gamepin,
             adminSocket,
@@ -26,12 +27,36 @@ const setupRouter = (middleware, io, adminSocket, participantSocket, databaseSer
 
         if (gamestatus === GameStates.IN_PROGRESS) {
             const cron = nodeCron.schedule(dateToCron(gamestate.value.endTime), async () => {
-                await databaseService.setGameStateAndUpdateClients(
+                await databaseService.setGameStatusAndUpdateClients(
                     GameStates.FINISHED,
                     gamepin,
                     adminSocket,
                     participantSocket
                 );
+
+                const gamestate = await databaseService.getGamestate(gamepin);
+
+                Promise.all(
+                    Object.values(gamestate.participants).map(async participant => {
+                        return matcher
+                            .getMatchRate(
+                                participant.content,
+                                participant.uuid,
+                                `sanity/games/${gamestate.gameId}`
+                            )
+                            .then(likhet => {
+                                gamestate.participants[participant.uuid].prosentLikhet = likhet;
+                                console.log('Likhet', likhet);
+                            });
+                    })
+                ).then(async r => {
+                    await databaseService.setGameStateAndUpdateClients(
+                        gamestate,
+                        gamepin,
+                        adminSocket,
+                        participantSocket
+                    );
+                });
             });
 
             setTimeout(() => {
@@ -40,6 +65,35 @@ const setupRouter = (middleware, io, adminSocket, participantSocket, databaseSer
         }
 
         res.status(200).send();
+    });
+
+    router.get('/test/:gamepin', async (req, res) => {
+        const { gamepin } = req.params;
+        const gamestate = await databaseService.getGamestate(gamepin);
+
+        Promise.all(
+            Object.values(gamestate.participants).map(async participant => {
+                return matcher
+                    .getMatchRate(
+                        participant.content,
+                        participant.uuid,
+                        `http://localhost:9000/sanity/games/${gamestate.gameId}`
+                    )
+                    .then(likhet => {
+                        gamestate.participants[participant.uuid].prosentLikhet = likhet;
+                        console.log('Likhet', likhet);
+                    });
+            })
+        ).then(async r => {
+            await databaseService.setGameStateAndUpdateClients(
+                gamestate,
+                gamepin,
+                adminSocket,
+                participantSocket
+            );
+
+            res.status(200).send();
+        });
     });
 
     router.delete('/game/:gamepin/:uuid', async (req, res) => {

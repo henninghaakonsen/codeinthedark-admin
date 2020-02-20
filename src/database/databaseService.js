@@ -70,8 +70,24 @@ class DatabaseService {
         return [];
     };
 
-    async setGameStateAndUpdateClients(gamestatus, gamepin, adminSocket, participantSocket) {
-        const gamestate = await this.setGameState(gamestatus, gamepin);
+    async setGameStateAndUpdateClients(gamestate, gamepin, adminSocket, participantSocket) {
+        await this.updateGamestate(gamestate);
+        adminSocket.emit(`gamestate-${gamepin}`, gamestate);
+
+        const emitParticipants = participants[gamepin];
+        if (emitParticipants) {
+            Object.values(emitParticipants).map(async participant => {
+                const participantData = await this.getParticipant(gamepin, participant.uuid);
+
+                participantSocket.connected[participant.id].emit(`gamestate`, participantData);
+            });
+        }
+
+        return gamestate;
+    }
+
+    async setGameStatusAndUpdateClients(gamestatus, gamepin, adminSocket, participantSocket) {
+        const gamestate = await this.setGameStatus(gamestatus, gamepin);
         adminSocket.emit(`gamestate-${gamepin}`, gamestate.value);
 
         const emitParticipants = participants[gamepin];
@@ -87,7 +103,7 @@ class DatabaseService {
     }
 
     // GAME  STATE
-    async setGameState(status, gamepin) {
+    async setGameStatus(status, gamepin) {
         const updatedGameState = {
             status,
             startTime:
@@ -99,7 +115,7 @@ class DatabaseService {
             endTime:
                 status === 'IN_PROGRESS'
                     ? moment()
-                          .add(15, 'minutes')
+                          .add(2, 'minutes')
                           .utc()
                           .toISOString()
                     : undefined,

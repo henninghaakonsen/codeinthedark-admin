@@ -13,6 +13,7 @@ const setupParticipantRoutes = (adminSocket, databaseService) => {
                 name,
                 uuid,
                 gamepin,
+                prosentLikhet: undefined,
                 content: `<html>
         <style>
     
