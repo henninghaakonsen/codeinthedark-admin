@@ -5,7 +5,7 @@ let db;
 // Connection URL
 const user = process.env.MONGODB_USER;
 const password = process.env.MONGODB_PWD;
-const url = `mongodb://${user}:${password}@ds061928.mlab.com:61928/heroku_rqjv6zp9`;
+const url = `mongodb+srv://${user}:${password}@code-in-the-dark.fiiz0.mongodb.net/<dbname>?retryWrites=true&w=majority`
 
 const MongoClient = new mongodb.MongoClient(url, {
     useUnifiedTopology: true,
